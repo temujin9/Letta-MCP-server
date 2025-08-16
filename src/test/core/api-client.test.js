@@ -52,6 +52,8 @@ describe('API Client Configuration (LMP-85)', () => {
             new LettaServer();
 
             expect(axios.create).toHaveBeenCalledWith({
+                maxRedirects: 5,
+                validateStatus: expect.any(Function),
                 baseURL: 'https://api.letta.com/v1',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,6 +69,8 @@ describe('API Client Configuration (LMP-85)', () => {
             new LettaServer();
 
             expect(axios.create).toHaveBeenCalledWith({
+                maxRedirects: 5,
+                validateStatus: expect.any(Function),
                 baseURL: 'https://api.letta.com//v1',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,6 +87,8 @@ describe('API Client Configuration (LMP-85)', () => {
 
             // This is the current behavior - it appends /v1 regardless
             expect(axios.create).toHaveBeenCalledWith({
+                maxRedirects: 5,
+                validateStatus: expect.any(Function),
                 baseURL: 'https://api.letta.com/v1/v1',
                 headers: {
                     'Content-Type': 'application/json',

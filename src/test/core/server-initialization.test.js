@@ -175,7 +175,10 @@ describe('LettaServer Initialization (LMP-82)', () => {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
+                
                 },
+                maxRedirects: 5,
+                validateStatus: expect.any(Function),
             });
             expect(server.apiBase).toBe('https://test.letta.com/v1');
         });
@@ -191,7 +194,10 @@ describe('LettaServer Initialization (LMP-82)', () => {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
+                
                 },
+                maxRedirects: 5,
+                validateStatus: expect.any(Function),
             });
         });
 
