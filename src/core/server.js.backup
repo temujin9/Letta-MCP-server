@@ -50,7 +50,7 @@ export class LettaServer {
             throw new Error('Missing required environment variable: LETTA_BASE_URL');
         }
 
-        // Initialize axios instance with redirect handling
+        // Initialize axios instance
         this.apiBase = `${this.apiBase}/v1`;
         this.api = axios.create({
             baseURL: this.apiBase,
@@ -58,10 +58,6 @@ export class LettaServer {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
-            // Enable automatic redirect following for 307/302 responses
-            maxRedirects: 5,
-            // Ensure we follow redirects properly
-            validateStatus: (status) => status < 400,
         });
     }
 
