@@ -1,4 +1,3 @@
-import { getOutputSchema } from './output-schemas.js';
 import { getEnhancedDescription } from './enhanced-descriptions.js';
 import { getToolAnnotations } from './annotations.js';
 import { getDeprecationNotice } from './deprecated-tools.js';

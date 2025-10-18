@@ -146,23 +146,6 @@ describe('Use Prompt Tool', () => {
             expect(parsedContent.messages).toBe(3);
         });
 
-        it('should include structuredContent in response', async () => {
-            const messages = [{ role: 'user', content: { type: 'text', text: 'Test' } }];
-
-            promptRegistry.set('test', {
-                name: 'test',
-                description: 'Test prompt',
-                handler: vi.fn().mockResolvedValue(messages),
-            });
-
-            const result = await handleUsePrompt(mockServer, { prompt_name: 'test' });
-
-            expect(result.structuredContent).toEqual({
-                prompt_name: 'test',
-                description: 'Test prompt',
-                messages,
-            });
-        });
 
         it('should handle preview of long messages', async () => {
             const longText = 'A'.repeat(300);

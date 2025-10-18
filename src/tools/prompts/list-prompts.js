@@ -26,10 +26,6 @@ export async function handleListPrompts(server) {
                     ),
                 },
             ],
-            structuredContent: {
-                total_prompts: prompts.length,
-                prompts,
-            },
         };
     } catch (error) {
         return server.createErrorResponse(error, 'Failed to list prompts');
@@ -46,40 +42,5 @@ export const listPromptsToolDefinition = {
         type: 'object',
         properties: {},
         additionalProperties: false,
-    },
-    outputSchema: {
-        type: 'object',
-        properties: {
-            total_prompts: {
-                type: 'integer',
-                description: 'Total number of available prompts',
-            },
-            prompts: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    properties: {
-                        name: { type: 'string' },
-                        title: { type: 'string' },
-                        description: { type: 'string' },
-                        arguments: {
-                            type: 'array',
-                            items: {
-                                type: 'object',
-                                properties: {
-                                    name: { type: 'string' },
-                                    title: { type: 'string' },
-                                    description: { type: 'string' },
-                                    required: { type: 'boolean' },
-                                },
-                            },
-                        },
-                    },
-                    additionalProperties: false,
-                },
-            },
-        },
-        additionalProperties: false,
-        required: ['total_prompts', 'prompts'],
     },
 };

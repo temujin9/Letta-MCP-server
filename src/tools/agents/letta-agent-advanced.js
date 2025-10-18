@@ -3,11 +3,7 @@
  * Provides unified interface for advanced agent capabilities
  */
 import { createLogger } from '../../core/logger.js';
-// eslint-disable-next-line no-unused-vars
-import {
-    agentAdvancedInputSchema,
-    agentAdvancedOutputSchema,
-} from '../schemas/agent-advanced-schemas.js';
+import { agentAdvancedInputSchema } from '../schemas/agent-advanced-schemas.js';
 
 const logger = createLogger('letta_agent_advanced');
 

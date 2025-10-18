@@ -40,11 +40,6 @@ export async function handleUsePrompt(server, args) {
                     ),
                 },
             ],
-            structuredContent: {
-                prompt_name,
-                description: prompt.description,
-                messages,
-            },
         };
     } catch (error) {
         return server.createErrorResponse(error, 'Failed to execute prompt');
@@ -73,31 +68,5 @@ export const usePromptToolDefinition = {
             },
         },
         required: ['prompt_name'],
-    },
-    outputSchema: {
-        type: 'object',
-        properties: {
-            prompt_name: {
-                type: 'string',
-                description: 'Name of the executed prompt',
-            },
-            description: {
-                type: 'string',
-                description: 'Description of the prompt',
-            },
-            messages: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    properties: {
-                        role: { type: 'string' },
-                        content: { type: 'object' },
-                    },
-                },
-                description: 'Messages returned by the prompt',
-            },
-            additionalProperties: false,
-        },
-        required: ['prompt_name', 'messages'],
     },
 };

@@ -9,10 +9,8 @@ describe('List Prompts Tool', () => {
     let mockServer;
 
     beforeEach(() => {
-        // Clear registry before each test
         promptRegistry.clear();
 
-        // Mock server
         mockServer = {
             createErrorResponse: vi.fn((error, context) => {
                 throw new Error(`${context}: ${error.message}`);
@@ -24,20 +22,13 @@ describe('List Prompts Tool', () => {
         it('should have correct tool definition', () => {
             expect(listPromptsToolDefinition).toMatchObject({
                 name: 'list_prompts',
-                description: expect.stringContaining('List all available prompt templates'),
+                description: expect.stringContaining('List all available'),
                 inputSchema: {
                     type: 'object',
                     properties: {},
                 },
-                outputSchema: {
-                    type: 'object',
-                    properties: {
-                        total_prompts: { type: 'integer' },
-                        prompts: { type: 'array' },
-                    },
-                    required: ['total_prompts', 'prompts'],
-                },
             });
+            expect(listPromptsToolDefinition.outputSchema).toBeUndefined();
         });
     });
 
@@ -54,14 +45,10 @@ describe('List Prompts Tool', () => {
                 prompts: [],
             });
 
-            expect(result.structuredContent).toEqual({
-                total_prompts: 0,
-                prompts: [],
-            });
+            expect(result.structuredContent).toBeUndefined();
         });
 
         it('should list all registered prompts', async () => {
-            // Register test prompts
             promptRegistry.set('test_prompt_1', {
                 name: 'test_prompt_1',
                 title: 'Test Prompt 1',
@@ -80,7 +67,6 @@ describe('List Prompts Tool', () => {
             promptRegistry.set('test_prompt_2', {
                 name: 'test_prompt_2',
                 description: 'Second test prompt',
-                // No title - should use name
                 arguments: [],
                 handler: async () => [],
             });
@@ -94,7 +80,6 @@ describe('List Prompts Tool', () => {
             expect(parsedContent.total_prompts).toBe(2);
             expect(parsedContent.prompts).toHaveLength(2);
 
-            // Check first prompt
             expect(parsedContent.prompts[0]).toEqual({
                 name: 'test_prompt_1',
                 title: 'Test Prompt 1',
@@ -109,7 +94,6 @@ describe('List Prompts Tool', () => {
                 ],
             });
 
-            // Check second prompt uses name as title
             expect(parsedContent.prompts[1]).toEqual({
                 name: 'test_prompt_2',
                 title: 'test_prompt_2',
@@ -123,7 +107,6 @@ describe('List Prompts Tool', () => {
                 name: 'minimal_prompt',
                 description: 'Minimal prompt',
                 handler: async () => [],
-                // No arguments field
             });
 
             const result = await handleListPrompts(mockServer);
@@ -144,7 +127,6 @@ describe('List Prompts Tool', () => {
             const result = await handleListPrompts(mockServer);
             const text = result.content[0].text;
 
-            // Check for indentation (pretty printed)
             expect(text).toContain('\n  ');
             expect(text).toContain('"total_prompts": 1');
         });
@@ -152,7 +134,6 @@ describe('List Prompts Tool', () => {
 
     describe('Error Handling', () => {
         it('should handle errors during prompt listing', async () => {
-            // Mock Map.values to throw error
             const originalValues = Map.prototype.values;
             Map.prototype.values = vi.fn(() => {
                 throw new Error('Map iteration failed');
@@ -167,12 +148,10 @@ describe('List Prompts Tool', () => {
                 'Failed to list prompts',
             );
 
-            // Restore
             Map.prototype.values = originalValues;
         });
 
         it('should handle errors during JSON stringification', async () => {
-            // Mock JSON.stringify to throw error
             const originalStringify = JSON.stringify;
             JSON.stringify = vi.fn(() => {
                 throw new TypeError('Converting circular structure to JSON');
@@ -186,13 +165,12 @@ describe('List Prompts Tool', () => {
 
             await expect(handleListPrompts(mockServer)).rejects.toThrow('Failed to list prompts');
 
-            // Restore
             JSON.stringify = originalStringify;
         });
     });
 
     describe('Output Format', () => {
-        it('should include both content and structuredContent', async () => {
+        it('should return content array with text type', async () => {
             promptRegistry.set('test', {
                 name: 'test',
                 title: 'Test',
@@ -203,13 +181,12 @@ describe('List Prompts Tool', () => {
 
             const result = await handleListPrompts(mockServer);
 
-            // Check content format
             expect(result.content).toBeInstanceOf(Array);
             expect(result.content[0]).toHaveProperty('type', 'text');
             expect(result.content[0]).toHaveProperty('text');
 
-            // Check structuredContent
-            expect(result.structuredContent).toEqual({
+            const parsedContent = JSON.parse(result.content[0].text);
+            expect(parsedContent).toEqual({
                 total_prompts: 1,
                 prompts: [
                     {
@@ -220,6 +197,8 @@ describe('List Prompts Tool', () => {
                     },
                 ],
             });
+
+            expect(result.structuredContent).toBeUndefined();
         });
 
         it('should not include handler function in output', async () => {
@@ -234,9 +213,10 @@ describe('List Prompts Tool', () => {
 
             const result = await handleListPrompts(mockServer);
 
-            // Handler should not be in output
             expect(result.content[0].text).not.toContain('handler');
-            expect(result.structuredContent.prompts[0]).not.toHaveProperty('handler');
+
+            const parsedContent = JSON.parse(result.content[0].text);
+            expect(parsedContent.prompts[0]).not.toHaveProperty('handler');
         });
     });
 });
