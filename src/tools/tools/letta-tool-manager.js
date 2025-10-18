@@ -85,11 +85,7 @@ async function handleListTools(server, args) {
     const tools = Array.isArray(result) ? result : result.tools || result.data || [];
     const total = result.total || tools.length;
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'list',
                     tools: tools.map((tool) => ({
@@ -108,10 +104,7 @@ async function handleListTools(server, args) {
                         has_more: tools.length === (pagination.limit || 50),
                     },
                     message: `Found ${tools.length} tools`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -130,11 +123,7 @@ async function handleGetTool(server, args) {
         return await server.client.tools.retrieve(tool_id);
     }, 'Getting tool details');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'get',
                     tool_id,
@@ -147,10 +136,7 @@ async function handleGetTool(server, args) {
                         json_schema: result.json_schema || result.schema,
                     },
                     message: 'Tool details retrieved successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -183,20 +169,13 @@ async function handleCreateTool(server, args) {
         return await server.client.tools.create(createData);
     }, 'Creating tool');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'create',
                     tool_id: result.id,
                     tool: result,
                     message: 'Tool created successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -218,11 +197,7 @@ async function handleAttachTool(server, args) {
         return await server.client.agents.tools.attach(agent_id, tool_id);
     }, 'Attaching tool to agent');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'attach',
                     agent_id,
@@ -230,10 +205,7 @@ async function handleAttachTool(server, args) {
                     attached: true,
                     agent_state: result, // SDK returns AgentState
                     message: 'Tool attached to agent successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -300,11 +272,7 @@ async function handleBulkAttach(server, args) {
 
     const successCount = attachResults.filter((r) => r.success).length;
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'bulk_attach',
                     tool_id,
@@ -312,10 +280,7 @@ async function handleBulkAttach(server, args) {
                     failed_count: attachResults.length - successCount,
                     results: attachResults,
                     message: `Attached tool to ${successCount} agents successfully`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -337,20 +302,13 @@ async function handleUpdateTool(server, args) {
         return await server.client.tools.modify(tool_id, tool_data);
     }, 'Updating tool');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'update',
                     tool_id,
                     tool: result,
                     message: 'Tool updated successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -369,19 +327,12 @@ async function handleDeleteTool(server, args) {
         return await server.client.tools.delete(tool_id);
     }, 'Deleting tool');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'delete',
                     tool_id,
                     message: 'Tool deleted successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -414,20 +365,13 @@ async function handleUpsertTool(server, args) {
         return await server.client.tools.upsert(upsertData);
     }, 'Upserting tool');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'upsert',
                     tool_id: result.id,
                     tool: result,
                     message: `Tool "${tool_data.name}" upserted successfully`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -449,21 +393,14 @@ async function handleDetachTool(server, args) {
         return await server.client.agents.tools.detach(agent_id, tool_id);
     }, 'Detaching tool from agent');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'detach',
                     tool_id,
                     detached_from_agent: agent_id,
                     agent_state: result, // SDK returns AgentState
                     message: 'Tool detached from agent successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -484,20 +421,13 @@ async function handleGenerateFromPrompt(server, args) {
         return response.data;
     }, 'Generating tool from prompt');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'generate_from_prompt',
                     generated_code: result.source_code || result.code,
                     tool: result,
                     message: 'Tool generated successfully from prompt',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -518,19 +448,12 @@ async function handleGenerateSchema(server, args) {
         return response.data;
     }, 'Generating schema from source code');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'generate_schema',
                     generated_schema: result.schema || result,
                     message: 'Schema generated successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -553,19 +476,12 @@ async function handleRunFromSource(server, args) {
         });
     }, 'Running tool from source code');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'run_from_source',
                     execution_result: result,
                     message: 'Tool executed successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**
@@ -581,20 +497,13 @@ async function handleAddBaseTools(server, _args) {
     // SDK returns array of tools
     const toolsCount = Array.isArray(result) ? result.length : result.count || 0;
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(ToolManagerResponseSchema, {
                     success: true,
                     operation: 'add_base_tools',
                     added_tools_count: toolsCount,
                     tools: result,
                     message: `Successfully added ${toolsCount} base tools`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'tool_ops' });
 }
 
 /**

@@ -8,6 +8,9 @@ import { createLogger } from '../../core/logger.js';
 import { sourceManagerInputSchema } from '../schemas/source-manager-schemas.js';
 
 const FileCtor = typeof File === 'function' ? File : null;
+import { validateResponse } from '../../core/response-validator.js';
+import { SourceManagerResponseSchema } from '../schemas/response-schemas.js';
+
 const logger = createLogger('letta_source_manager');
 
 export async function handleLettaSourceManager(server, args) {
@@ -58,11 +61,7 @@ async function handleList(server, args) {
 
     // SDK returns Source[] array
     const sources = Array.isArray(result) ? result : [];
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'list',
                     sources: sources.map((s) => ({
@@ -74,10 +73,7 @@ async function handleList(server, args) {
                         num_files: s.num_files || 0,
                     })),
                     message: `Found ${sources.length} sources`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -93,20 +89,13 @@ async function handleCreate(server, args) {
         return await server.client.sources.create(source_data);
     }, 'Creating source');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'create',
                     source_id: result.id,
                     source: result,
                     message: 'Source created successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -122,20 +111,13 @@ async function handleGet(server, args) {
         return await server.client.sources.retrieve(source_id);
     }, 'Getting source');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'get',
                     source_id,
                     source: result,
                     message: 'Source retrieved successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -152,20 +134,13 @@ async function handleUpdate(server, args) {
         return await server.client.sources.modify(source_id, source_data);
     }, 'Updating source');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'update',
                     source_id,
                     source: result,
                     message: 'Source updated successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -181,19 +156,12 @@ async function handleDelete(server, args) {
         return await server.client.sources.delete(source_id);
     }, 'Deleting source');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'delete',
                     source_id,
                     message: 'Source deleted successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -206,19 +174,12 @@ async function handleCount(server, _args) {
         return await server.client.sources.count();
     }, 'Counting sources');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'count',
                     count: typeof result === 'number' ? result : result.count || 0,
                     message: 'Sources counted successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -236,20 +197,13 @@ async function handleGetByName(server, args) {
         return await server.client.sources.retrieve(sourceId);
     }, 'Getting source by name');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'get_by_name',
                     source_name,
                     source: result,
                     message: 'Source retrieved successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -267,20 +221,13 @@ async function handleUploadFile(server, args) {
         return await server.client.sources.files.upload(source_id, uploadPayload);
     }, 'Uploading file to source');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'upload_file',
                     source_id,
                     file_id: result?.id || result?.file_id,
                     message: 'File uploaded successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 function normalizeUploadPayload(fileData) {
@@ -416,11 +363,7 @@ async function handleListFiles(server, args) {
 
     // SDK returns FileMetadata[] array
     const files = Array.isArray(result) ? result : [];
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'list_files',
                     source_id,
@@ -432,10 +375,7 @@ async function handleListFiles(server, args) {
                         uploaded_at: f.uploaded_at,
                     })),
                     message: `Found ${files.length} files`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -452,20 +392,13 @@ async function handleDeleteFile(server, args) {
         return await server.client.sources.files.delete(source_id, file_id);
     }, 'Deleting file from source');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'delete_file',
                     source_id,
                     file_id,
                     message: 'File deleted successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -483,11 +416,7 @@ async function handleListPassages(server, args) {
 
     // SDK returns Passage[] array
     const passages = Array.isArray(result) ? result : [];
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'list_passages',
                     source_id,
@@ -498,10 +427,7 @@ async function handleListPassages(server, args) {
                         metadata: p.metadata,
                     })),
                     message: `Found ${passages.length} passages`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -523,20 +449,13 @@ async function handleGetMetadata(server, args) {
         return response.data;
     }, 'Getting source metadata');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'get_metadata',
                     source_id,
                     metadata: result,
                     message: 'Metadata retrieved successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -553,11 +472,7 @@ async function handleAttachToAgent(server, args) {
         return await server.client.agents.sources.attach(agent_id, source_id);
     }, 'Attaching source to agent');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'attach_to_agent',
                     agent_id,
@@ -565,10 +480,7 @@ async function handleAttachToAgent(server, args) {
                     attached: true,
                     agent_state: result, // SDK returns AgentState
                     message: 'Source attached to agent successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -585,11 +497,7 @@ async function handleDetachFromAgent(server, args) {
         return await server.client.agents.sources.detach(agent_id, source_id);
     }, 'Detaching source from agent');
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'detach_from_agent',
                     agent_id,
@@ -597,10 +505,7 @@ async function handleDetachFromAgent(server, args) {
                     detached: true,
                     agent_state: result, // SDK returns AgentState
                     message: 'Source detached from agent successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 /**
@@ -618,11 +523,7 @@ async function handleListAgentSources(server, args) {
 
     // SDK returns Source[] array
     const sources = Array.isArray(result) ? result : [];
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(SourceManagerResponseSchema, {
                     success: true,
                     operation: 'list_agent_sources',
                     agent_id,
@@ -635,10 +536,7 @@ async function handleListAgentSources(server, args) {
                         num_files: s.num_files || 0,
                     })),
                     message: `Found ${sources.length} sources for agent`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'source_ops' });
 }
 
 export const lettaSourceManagerDefinition = {

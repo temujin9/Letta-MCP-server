@@ -4,6 +4,8 @@
  */
 import { createLogger } from '../../core/logger.js';
 import { mcpOpsInputSchema } from '../schemas/mcp-ops-schemas.js';
+import { validateResponse } from '../../core/response-validator.js';
+import { McpServerResponseSchema } from '../schemas/response-schemas.js';
 
 const logger = createLogger('letta_mcp_ops');
 
@@ -68,20 +70,13 @@ async function handleAddServer(server, args) {
         'Adding MCP server'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'add',
                     server_name: server_config.serverName || server_config.name || 'unnamed',
                     server_config: result,
                     message: 'MCP server added successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -106,20 +101,13 @@ async function handleUpdateServer(server, args) {
         'Updating MCP server'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'update',
                     server_name,
                     server_config: result,
                     message: 'MCP server updated successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -141,20 +129,13 @@ async function handleDeleteServer(server, args) {
         'Deleting MCP server'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'delete',
                     server_name,
                     deleted_servers: result, // SDK returns array of deleted servers
                     message: 'MCP server deleted successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -178,11 +159,7 @@ async function handleTestServer(server, args) {
     );
     const latency = Date.now() - startTime;
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'test',
                     test_result: {
@@ -191,10 +168,7 @@ async function handleTestServer(server, args) {
                         ...result,
                     },
                     message: 'MCP server connection successful',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -224,20 +198,13 @@ async function handleConnectServer(server, args) {
         'Connecting to MCP server with OAuth'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'connect',
                     server_name,
                     oauth_stream: result, // SDK returns Stream object for SSE
                     message: 'OAuth flow initiated. SDK returns stream for authorization events.',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -265,20 +232,13 @@ async function handleResyncServer(server, args) {
         'Resyncing MCP server'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'resync',
                     server_name,
                     servers: result.tools || result,
                     message: 'MCP server resynced successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -309,21 +269,14 @@ async function handleExecuteTool(server, args) {
         'Executing MCP tool'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'execute',
                     server_name,
                     tool_name,
                     execution_result: result,
                     message: 'Tool executed successfully',
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -347,19 +300,12 @@ async function handleListServers(server, _args) {
         ...config,
     }));
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'list_servers',
                     servers: serversList,
                     message: `Found ${serversList.length} MCP servers`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -383,11 +329,7 @@ async function handleListTools(server, args) {
 
     const tools = Array.isArray(result) ? result : result.tools || [];
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'list_tools',
                     server_name,
@@ -397,10 +339,7 @@ async function handleListTools(server, args) {
                         schema: t.schema || t.inputSchema,
                     })),
                     message: `Found ${tools.length} tools on server ${server_name}`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**
@@ -425,11 +364,7 @@ async function handleRegisterTool(server, args) {
         'Registering MCP tool in Letta'
     );
 
-    return {
-        content: [
-            {
-                type: 'text',
-                text: JSON.stringify({
+    return validateResponse(McpServerResponseSchema, {
                     success: true,
                     operation: 'register_tool',
                     server_name,
@@ -437,10 +372,7 @@ async function handleRegisterTool(server, args) {
                     tool_id: result.id || result.tool_id,
                     tool: result,
                     message: `Tool ${tool_name} from ${server_name} registered successfully in Letta`,
-                }),
-            },
-        ],
-    };
+                }, { context: 'mcp_ops' });
 }
 
 /**

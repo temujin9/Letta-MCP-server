@@ -19,17 +19,10 @@ export async function handleListEmbeddingModels(server, _args) {
             embedding_chunk_size: model.embedding_chunk_size,// Important: chunk size for text processing
         }));
 
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify({
+        return validateResponse(ModelResponseSchema, {
                         model_count: models.length,
                         models: trimmedModels,
-                    }),
-                },
-            ],
-        };
+                    }, { context: 'list_embedding_models' });
     } catch (error) {
         server.createErrorResponse(error);
     }

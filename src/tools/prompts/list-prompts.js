@@ -12,21 +12,14 @@ export async function handleListPrompts(server) {
             arguments: p.arguments || [],
         }));
 
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(
+        return validateResponse(PromptResponseSchema, 
                         {
                             total_prompts: prompts.length,
                             prompts,
                         },
                         null,
                         2,
-                    ),
-                },
-            ],
-        };
+                    , { context: 'list_prompts' });
     } catch (error) {
         return server.createErrorResponse(error, 'Failed to list prompts');
     }

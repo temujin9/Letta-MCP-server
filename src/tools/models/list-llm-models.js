@@ -20,17 +20,10 @@ export async function handleListLlmModels(server, _args) {
             temperature: model.temperature,          // Default temperature (can be overridden)
         }));
 
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify({
+        return validateResponse(ModelResponseSchema, {
                         model_count: models.length,
                         models: trimmedModels,
-                    }),
-                },
-            ],
-        };
+                    }, { context: 'list_llm_models' });
     } catch (error) {
         server.createErrorResponse(error);
     }

@@ -4,6 +4,8 @@
  */
 import { createLogger } from '../../core/logger.js';
 import { fileOpsInputSchema } from '../schemas/file-ops-schemas.js';
+import { validateResponse } from '../../core/response-validator.js';
+import { FileFolderResponseSchema } from '../schemas/response-schemas.js';
 
 const logger = createLogger('letta_file_folder_ops');
 
@@ -62,10 +64,7 @@ async function handleListFiles(server, args) {
     // SDK returns PaginatedAgentFiles with files array
     const files = result.files || [];
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'list_files',
                 agent_id,
@@ -78,9 +77,7 @@ async function handleListFiles(server, args) {
                     opened_at: f.opened_at,
                 })),
                 message: `Found ${files.length} files`,
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -105,10 +102,7 @@ async function handleOpenFile(server, args) {
         'Opening file'
     );
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'open_file',
                 agent_id,
@@ -116,9 +110,7 @@ async function handleOpenFile(server, args) {
                 opened: true,
                 evicted_files: result, // SDK returns array of file names evicted due to LRU
                 message: 'File opened successfully',
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -143,19 +135,14 @@ async function handleCloseFile(server, args) {
         'Closing file'
     );
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'close_file',
                 agent_id,
                 file_id,
                 closed: true,
                 message: 'File closed successfully',
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -180,19 +167,14 @@ async function handleCloseAllFiles(server, args) {
     // SDK returns array of file names that were closed
     const closedFiles = Array.isArray(result) ? result : [];
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'close_all_files',
                 agent_id,
                 closed_count: closedFiles.length,
                 closed_files: closedFiles,
                 message: `Closed ${closedFiles.length} files`,
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -211,10 +193,7 @@ async function handleListFolders(server, _args) {
     // SDK returns Folder[] array
     const folders = Array.isArray(result) ? result : [];
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'list_folders',
                 folders: folders.map(f => ({
@@ -225,9 +204,7 @@ async function handleListFolders(server, _args) {
                     agent_count: f.agent_count || 0,
                 })),
                 message: `Found ${folders.length} folders`,
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -252,10 +229,7 @@ async function handleAttachFolder(server, args) {
         'Attaching folder to agent'
     );
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'attach_folder',
                 agent_id,
@@ -263,9 +237,7 @@ async function handleAttachFolder(server, args) {
                 attached: true,
                 agent_state: result, // SDK returns AgentState
                 message: 'Folder attached to agent successfully',
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -290,10 +262,7 @@ async function handleDetachFolder(server, args) {
         'Detaching folder from agent'
     );
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'detach_folder',
                 agent_id,
@@ -301,9 +270,7 @@ async function handleDetachFolder(server, args) {
                 detached: true,
                 agent_state: result, // SDK returns AgentState
                 message: 'Folder detached from agent successfully',
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**
@@ -328,19 +295,14 @@ async function handleListAgentsInFolder(server, args) {
     // SDK returns array of agent ID strings
     const agentIds = Array.isArray(result) ? result : [];
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(FileFolderResponseSchema, {
                 success: true,
                 operation: 'list_agents_in_folder',
                 folder_id,
                 agent_ids: agentIds,
                 agents: agentIds.map(id => ({ id })), // Convert IDs to objects for consistency
                 message: `Found ${agentIds.length} agents in folder`,
-            }),
-        }],
-    };
+            }, { context: 'file_ops' });
 }
 
 /**

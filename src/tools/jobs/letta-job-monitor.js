@@ -4,6 +4,8 @@
  */
 import { createLogger } from '../../core/logger.js';
 import { jobMonitorInputSchema } from '../schemas/job-monitor-schemas.js';
+import { validateResponse } from '../../core/response-validator.js';
+import { JobMonitorResponseSchema } from '../schemas/response-schemas.js';
 
 const logger = createLogger('letta_job_monitor');
 
@@ -58,10 +60,7 @@ async function handleList(server, args) {
     // SDK returns Job[] array
     const jobs = Array.isArray(result) ? result : [];
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(JobMonitorResponseSchema, {
                 success: true,
                 operation: 'list',
                 jobs: jobs.map(job => ({
@@ -77,9 +76,7 @@ async function handleList(server, args) {
                     result: job.result,
                 })),
                 message: `Found ${jobs.length} jobs`,
-            }),
-        }],
-    };
+            }, { context: 'job_ops' });
 }
 
 /**
@@ -101,10 +98,7 @@ async function handleGet(server, args) {
         'Getting job details'
     );
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(JobMonitorResponseSchema, {
                 success: true,
                 operation: 'get',
                 job: {
@@ -120,9 +114,7 @@ async function handleGet(server, args) {
                     result: result.result,
                 },
                 message: 'Job details retrieved successfully',
-            }),
-        }],
-    };
+            }, { context: 'job_ops' });
 }
 
 /**
@@ -141,10 +133,7 @@ async function handleListActive(server, _args) {
     // SDK returns Job[] array
     const jobs = Array.isArray(result) ? result : [];
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(JobMonitorResponseSchema, {
                 success: true,
                 operation: 'list_active',
                 jobs: jobs.map(job => ({
@@ -157,9 +146,7 @@ async function handleListActive(server, _args) {
                     progress: job.progress,
                 })),
                 message: `Found ${jobs.length} active jobs`,
-            }),
-        }],
-    };
+            }, { context: 'job_ops' });
 }
 
 /**
@@ -181,19 +168,14 @@ async function handleCancel(server, args) {
         'Cancelling job'
     );
 
-    return {
-        content: [{
-            type: 'text',
-            text: JSON.stringify({
+    return validateResponse(JobMonitorResponseSchema, {
                 success: true,
                 operation: 'cancel',
                 job_id,
                 cancelled: true,
                 job: result, // SDK returns Job object with updated status
                 message: 'Job cancelled successfully',
-            }),
-        }],
-    };
+            }, { context: 'job_ops' });
 }
 
 /**
