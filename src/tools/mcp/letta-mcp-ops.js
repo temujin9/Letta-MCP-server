@@ -3,8 +3,7 @@
  * Provides unified interface for complete MCP server lifecycle management
  */
 import { createLogger } from '../../core/logger.js';
-// eslint-disable-next-line no-unused-vars
-import { mcpOpsInputSchema, mcpOpsOutputSchema } from '../schemas/mcp-ops-schemas.js';
+import { mcpOpsInputSchema } from '../schemas/mcp-ops-schemas.js';
 
 const logger = createLogger('letta_mcp_ops');
 
@@ -12,7 +11,7 @@ const logger = createLogger('letta_mcp_ops');
  * Handle letta_mcp_ops tool requests
  * @param {Object} server - LettaServer instance
  * @param {Object} args - Tool arguments following mcpOpsInputSchema
- * @returns {Promise<Object>} Tool response following mcpOpsOutputSchema
+ * @returns {Promise<Object>} MCP tool response with text content
  */
 export async function handleLettaMcpOps(server, args) {
     const { operation } = args;

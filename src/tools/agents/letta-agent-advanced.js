@@ -11,7 +11,7 @@ const logger = createLogger('letta_agent_advanced');
  * Handle letta_agent_advanced tool requests
  * @param {Object} server - LettaServer instance
  * @param {Object} args - Tool arguments following agentAdvancedInputSchema
- * @returns {Promise<Object>} Tool response following agentAdvancedOutputSchema
+ * @returns {Promise<Object>} Tool response with text content
  */
 export async function handleLettaAgentAdvanced(server, args) {
     const { operation } = args;

@@ -6,7 +6,6 @@ import { createLogger } from '../../core/logger.js';
 // eslint-disable-next-line no-unused-vars
 import {
     toolManagerInputSchema,
-    toolManagerOutputSchema,
 } from '../schemas/tool-manager-schemas.js';
 
 const logger = createLogger('letta_tool_manager');
@@ -15,7 +14,7 @@ const logger = createLogger('letta_tool_manager');
  * Handle letta_tool_manager tool requests
  * @param {Object} server - LettaServer instance
  * @param {Object} args - Tool arguments following toolManagerInputSchema
- * @returns {Promise<Object>} Tool response following toolManagerOutputSchema
+ * @returns {Promise<Object>} Tool response with text content
  */
 export async function handleLettaToolManager(server, args) {
     const { operation } = args;

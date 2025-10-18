@@ -6,7 +6,6 @@ import { createLogger } from '../../core/logger.js';
 // eslint-disable-next-line no-unused-vars
 import {
     memoryUnifiedInputSchema,
-    memoryUnifiedOutputSchema,
 } from '../schemas/memory-unified-schemas.js';
 
 const logger = createLogger('letta_memory_unified');
@@ -15,7 +14,7 @@ const logger = createLogger('letta_memory_unified');
  * Handle letta_memory_unified tool requests
  * @param {Object} server - LettaServer instance
  * @param {Object} args - Tool arguments following memoryUnifiedInputSchema
- * @returns {Promise<Object>} Tool response following memoryUnifiedOutputSchema
+ * @returns {Promise<Object>} Tool response with text content
  */
 export async function handleLettaMemoryUnified(server, args) {
     const { operation } = args;

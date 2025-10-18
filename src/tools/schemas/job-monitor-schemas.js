@@ -93,38 +93,3 @@ export const JobStatusSchema = {
     additionalProperties: false,
 };
 
-/**
- * Output schema for letta_job_monitor tool
- */
-export const jobMonitorOutputSchema = {
-    type: 'object',
-    properties: {
-        success: {
-            type: 'boolean',
-            description: 'Whether the operation succeeded',
-        },
-        operation: {
-            type: 'string',
-            description: 'Operation that was performed',
-        },
-        job: {
-            ...JobStatusSchema,
-            description: 'Job details (for get operation)',
-        },
-        jobs: {
-            type: 'array',
-            items: JobStatusSchema,
-            description: 'List of jobs (for list operations)',
-        },
-        cancelled: {
-            type: 'boolean',
-            description: 'Whether job was cancelled',
-        },
-        message: {
-            type: 'string',
-            description: 'Status or error message',
-        },
-    },
-    required: ['success', 'operation'],
-    additionalProperties: false,
-};

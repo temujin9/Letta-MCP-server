@@ -130,19 +130,4 @@ export const createAgentToolDefinition = {
         required: ['name', 'description'],
         additionalProperties: false,
     },
-    outputSchema: {
-        type: 'object',
-        properties: {
-            agent_id: {
-                type: 'string',
-                description: 'Unique identifier of the created agent',
-            },
-            capabilities: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'List of tool names attached to the agent',
-            },
-        },
-        required: ['agent_id'],
-    },
 };
