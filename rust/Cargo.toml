@@ -5,6 +5,15 @@ members = [
 ]
 resolver = "2"
 
+# Patch turbomcp to use our fork with $defs support
+# This allows us to use version numbers in Cargo.toml while actually pulling from our fork
+[patch.crates-io]
+turbomcp = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
+turbomcp-macros = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
+turbomcp-protocol = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
+turbomcp-server = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
+turbomcp-transport = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
+
 [workspace.dependencies]
 # Core async runtime
 tokio = { version = "1.47", features = ["full"] }

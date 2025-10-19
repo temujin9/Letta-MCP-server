@@ -13,9 +13,9 @@ path = "src/main.rs"
 [dependencies]
 # Workspace dependencies
 tokio = { workspace = true }
-# Use forked TurboMCP with FlattenTool derive macro
-turbomcp = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs", features = ["http", "schemars"] }
-turbomcp-macros = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
+# TurboMCP - use crates.io versions which are patched to our fork via [patch.crates-io]
+turbomcp = { version = "2.0.0-rc.3", features = ["http", "schemars"] }
+turbomcp-macros = "2.0.0-rc.3"
 reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -29,10 +29,10 @@ letta = { workspace = true }
 base64 = { workspace = true }
 bytes = { workspace = true }
 
-# TurboMCP internal crates (required by macros) - use forked versions
-turbomcp-protocol = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
-turbomcp-server = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
-turbomcp-transport = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs", features = ["http"] }
+# TurboMCP internal crates - versions patched via workspace [patch.crates-io]
+turbomcp-protocol = "2.0.0-rc.3"
+turbomcp-server = "2.0.0-rc.3"
+turbomcp-transport = { version = "2.0.0-rc.3", features = ["http"] }
 
 # Local dependencies
 letta-types = { path = "../letta-types" }
