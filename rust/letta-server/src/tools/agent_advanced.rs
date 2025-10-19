@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use turbomcp::McpError;
 use letta_types::{Message, Pagination, StandardResponse};
-use crate::client::LettaClient;
+use letta::LettaClient;
 
 /// Agent operation discriminator
 #[derive(Debug, Deserialize, Serialize)]
@@ -83,7 +83,7 @@ pub struct AgentAdvancedRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub embedding_config: Option<Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_ids: Option<Vec<String>>,
+    pub tool_ids: Option<Value>,
 
     // Pagination
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -151,10 +151,21 @@ async fn handle_list_agents(
     request: AgentAdvancedRequest,
 ) -> Result<StandardResponse, McpError> {
     let pagination = request.pagination.unwrap_or_default();
-    let limit = pagination.limit.unwrap_or(50);
-    let offset = pagination.offset.unwrap_or(0);
 
-    let agents = client.list_agents(limit, offset).await?;
+    // Use Letta SDK's cursor-based pagination
+    // Note: SDK uses cursor-based pagination (before/after), not offset
+    let params = letta::types::ListAgentsParams {
+        limit: pagination.limit.map(|l| l as u32),
+        ..Default::default()
+    };
+
+    // Call SDK method
+    let agents = client
+        .agents()
+        .list(Some(params))
+        .await
+        .map_err(|e| McpError::internal(format!("Failed to list agents: {}", e)))?;
+
     let count = agents.len();
 
     Ok(StandardResponse::success(
@@ -172,19 +183,45 @@ async fn handle_create_agent(
         .name
         .ok_or_else(|| McpError::invalid_request("name is required for create operation".to_string()))?;
 
+    // Build the agent request with SDK types
+    let mut agent_request = letta::types::CreateAgentRequest {
+        name: Some(name),
+        ..Default::default()
+    };
+
+    // Add optional fields if provided
+    if let Some(system) = request.system {
+        agent_request.system = Some(system);
+    }
+
+    // For complex types, parse from JSON Value to SDK types
+    if let Some(llm_config_value) = request.llm_config {
+        let llm_config: letta::types::LLMConfig = serde_json::from_value(llm_config_value)
+            .map_err(|e| McpError::invalid_request(format!("Invalid llm_config: {}", e)))?;
+        agent_request.llm_config = Some(llm_config);
+    }
+
+    if let Some(embedding_config_value) = request.embedding_config {
+        let embedding_config: letta::types::EmbeddingConfig = serde_json::from_value(embedding_config_value)
+            .map_err(|e| McpError::invalid_request(format!("Invalid embedding_config: {}", e)))?;
+        agent_request.embedding_config = Some(embedding_config);
+    }
+
+    if let Some(tool_ids_value) = request.tool_ids {
+        let tool_ids: Vec<letta::types::LettaId> = serde_json::from_value(tool_ids_value)
+            .map_err(|e| McpError::invalid_request(format!("Invalid tool_ids: {}", e)))?;
+        agent_request.tool_ids = Some(tool_ids);
+    }
+
     let agent = client
-        .create_agent(
-            name,
-            request.system,
-            request.llm_config,
-            request.embedding_config,
-            request.tool_ids,
-        )
-        .await?;
+        .agents()
+        .create(agent_request)
+        .await
+        .map_err(|e| McpError::internal(format!("Failed to create agent: {}", e)))?;
 
     Ok(StandardResponse::success(
         "create",
-        agent,
+        serde_json::to_value(agent)?,
         "Agent created successfully",
     ))
 }
@@ -197,33 +234,34 @@ async fn handle_get_agent(
         .agent_id
         .ok_or_else(|| McpError::invalid_request("agent_id is required for get operation".to_string()))?;
 
-    let agent = client.get_agent(&agent_id).await?;
+    // Parse agent_id as LettaId
+    let letta_id: letta::types::LettaId = agent_id
+        .parse()
+        .map_err(|e| McpError::invalid_request(format!("Invalid agent_id format: {}", e)))?;
+
+    let agent = client
+        .agents()
+        .get(&letta_id)
+        .await
+        .map_err(|e| McpError::internal(format!("Failed to get agent: {}", e)))?;
 
     Ok(StandardResponse::success(
         "get",
-        agent,
+        serde_json::to_value(agent)?,
         "Agent retrieved successfully",
     ))
 }
 
 async fn handle_update_agent(
-    client: &LettaClient,
-    request: AgentAdvancedRequest,
+    _client: &LettaClient,
+    _request: AgentAdvancedRequest,
 ) -> Result<StandardResponse, McpError> {
-    let agent_id = request
-        .agent_id
-        .ok_or_else(|| McpError::invalid_request("agent_id is required for update operation".to_string()))?;
-
-    let update_data = request.update_data.ok_or_else(|| {
-        McpError::invalid_request("update_data is required for update operation".to_string())
-    })?;
-
-    let agent = client.update_agent(agent_id, update_data).await?;
-
-    Ok(StandardResponse::success(
-        "update",
-        agent,
-        "Agent updated successfully",
+    // TODO: The Letta SDK v0.1.2 doesn't expose an agent update method.
+    // Updates are typically done through specific endpoints (memory, tools, etc.)
+    // For now, return a not implemented error
+    Err(McpError::internal(
+        "Agent update operation not yet implemented in SDK v0.1.2. \
+         Please use specific update operations (memory, tools, etc.)".to_string(),
     ))
 }
 
@@ -235,11 +273,20 @@ async fn handle_delete_agent(
         .agent_id
         .ok_or_else(|| McpError::invalid_request("agent_id is required for delete operation".to_string()))?;
 
-    client.delete_agent(&agent_id).await?;
+    // Parse agent_id as LettaId
+    let letta_id: letta::types::LettaId = agent_id
+        .parse()
+        .map_err(|e| McpError::invalid_request(format!("Invalid agent_id format: {}", e)))?;
+
+    client
+        .agents()
+        .delete(&letta_id)
+        .await
+        .map_err(|e| McpError::internal(format!("Failed to delete agent: {}", e)))?;
 
     Ok(StandardResponse::success_no_data(
         "delete",
-        format!("Agent {} deleted successfully", agent_id),
+        format!("Agent {} deleted successfully", letta_id),
     ))
 }
 
@@ -255,19 +302,34 @@ async fn handle_send_message(
         McpError::invalid_request("messages is required for send_message operation".to_string())
     })?;
 
-    // Convert Message structs to JSON values
-    let message_values: Vec<Value> = messages
-        .into_iter()
-        .map(|m| serde_json::to_value(m))
-        .collect::<Result<Vec<_>, _>>()?;
+    // Parse agent_id as LettaId
+    let letta_id: letta::types::LettaId = agent_id
+        .parse()
+        .map_err(|e| McpError::invalid_request(format!("Invalid agent_id format: {}", e)))?;
 
+    // Convert Message structs to MessageCreate (SDK type)
+    let message_creates: Vec<letta::types::MessageCreate> = messages
+        .into_iter()
+        .map(|m| letta::types::MessageCreate::user(&m.content))
+        .collect();
+
+    // Build the request (no stream field in CreateMessagesRequest)
+    let messages_request = letta::types::CreateMessagesRequest {
+        messages: message_creates,
+        ..Default::default()
+    };
+
+    // For streaming, we'd use client.messages().create_stream() instead
+    // For now, use non-streaming create
     let response = client
-        .send_message(agent_id, message_values, request.stream)
-        .await?;
+        .messages()
+        .create(&letta_id, messages_request)
+        .await
+        .map_err(|e| McpError::internal(format!("Failed to send message: {}", e)))?;
 
     Ok(StandardResponse::success(
         "send_message",
-        response,
+        serde_json::to_value(response)?,
         "Message sent successfully",
     ))
 }

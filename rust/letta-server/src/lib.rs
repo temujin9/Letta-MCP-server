@@ -7,10 +7,10 @@
 use std::sync::Arc;
 use turbomcp::prelude::*;
 
-mod client;
 mod tools;
 
-use client::LettaClient;
+// Use official Letta SDK
+use letta::{auth::AuthConfig, ClientConfig, LettaClient};
 use tools::agent_advanced;
 
 /// Main Letta MCP Server
@@ -26,13 +26,20 @@ pub struct LettaServer {
 )]
 impl LettaServer {
     /// Create a new Letta MCP Server instance
-    pub fn new(base_url: String, password: String) -> Self {
+    pub fn new(base_url: String, password: String) -> Result<Self, Box<dyn std::error::Error>> {
         tracing::info!("Initializing Letta MCP Server");
         tracing::info!("Base URL: {}", base_url);
 
-        Self {
-            client: Arc::new(LettaClient::new(base_url, password)),
-        }
+        // Configure the official Letta SDK client
+        let config = ClientConfig::new(&base_url)?
+            .auth(AuthConfig::bearer(&password));
+
+        let client = LettaClient::new(config)?;
+        tracing::info!("Letta SDK client initialized successfully");
+
+        Ok(Self {
+            client: Arc::new(client),
+        })
     }
 
     // ========================================

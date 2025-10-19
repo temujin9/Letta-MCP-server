@@ -31,8 +31,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Transport: {}", transport);
     tracing::info!("Letta API: {}", base_url);
 
-    // Create server instance
-    let server = LettaServer::new(base_url, password);
+    // Create server instance with Letta SDK
+    let server = LettaServer::new(base_url, password)?;
 
     // Run with selected transport
     // NOTE: For now, only stdio is working. HTTP support will be added once
