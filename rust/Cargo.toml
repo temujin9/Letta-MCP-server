@@ -5,7 +5,7 @@ members = [
 ]
 resolver = "2"
 
-# Patch turbomcp to use our fork with $defs support
+# Patch turbomcp to use our fork with $defs support and consolidated package
 # This allows us to use version numbers in Cargo.toml while actually pulling from our fork
 [patch.crates-io]
 turbomcp = { git = "https://github.com/oculairmedia/turbomcp.git", branch = "feature/flatten-structs" }
