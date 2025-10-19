@@ -3208,15 +3208,7 @@ dependencies = [
 [[package]]
 name = "turbomcp"
 version = "2.0.0-rc.3"
-source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#7452f5ce9403d3ac87edaba5108fdbd90b20c349"
-dependencies = [
- "turbomcp-core",
-]
-
-[[package]]
-name = "turbomcp-core"
-version = "2.0.0-rc.3"
-source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#7452f5ce9403d3ac87edaba5108fdbd90b20c349"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#ab9f46e976d3286a43ee63f43377419cc6e69610"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3251,7 +3243,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-macros"
 version = "2.0.0-rc.3"
-source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#7452f5ce9403d3ac87edaba5108fdbd90b20c349"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#ab9f46e976d3286a43ee63f43377419cc6e69610"
 dependencies = [
  "axum",
  "proc-macro2",
@@ -3266,7 +3258,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-protocol"
 version = "2.0.0-rc.3"
-source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#7452f5ce9403d3ac87edaba5108fdbd90b20c349"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#ab9f46e976d3286a43ee63f43377419cc6e69610"
 dependencies = [
  "ahash",
  "arc-swap",
@@ -3299,7 +3291,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-server"
 version = "2.0.0-rc.3"
-source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#7452f5ce9403d3ac87edaba5108fdbd90b20c349"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#ab9f46e976d3286a43ee63f43377419cc6e69610"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -3333,7 +3325,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-transport"
 version = "2.0.0-rc.3"
-source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#7452f5ce9403d3ac87edaba5108fdbd90b20c349"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#ab9f46e976d3286a43ee63f43377419cc6e69610"
 dependencies = [
  "ahash",
  "anyhow",
