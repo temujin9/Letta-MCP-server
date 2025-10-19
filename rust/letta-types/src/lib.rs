@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Common pagination parameters
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
 pub struct Pagination {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<usize>,
@@ -24,7 +24,7 @@ impl Default for Pagination {
 }
 
 /// Message structure for agent communication
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
 pub struct Message {
     pub role: String,
     pub content: String,

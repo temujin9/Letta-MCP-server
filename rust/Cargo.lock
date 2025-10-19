@@ -1433,10 +1433,13 @@ name = "letta-server"
 version = "2.0.1"
 dependencies = [
  "anyhow",
+ "base64 0.22.1",
+ "bytes",
  "chrono",
  "letta",
  "letta-types",
  "reqwest",
+ "schemars 1.0.4",
  "serde",
  "serde_json",
  "thiserror",
@@ -1445,8 +1448,10 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "turbomcp",
+ "turbomcp-macros",
  "turbomcp-protocol",
  "turbomcp-server",
+ "turbomcp-transport",
 ]
 
 [[package]]
@@ -1454,6 +1459,7 @@ name = "letta-types"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "schemars 1.0.4",
  "serde",
  "serde_json",
 ]
@@ -3202,8 +3208,7 @@ dependencies = [
 [[package]]
 name = "turbomcp"
 version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebf361cbe6e4a96a75f2f70aa13d5b5074c1748879f5428580632ec5c8c1d442"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#dd7259c2023b2c1091af6f4879ff2402730c8910"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3216,7 +3221,6 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "regex",
  "reqwest",
  "schemars 1.0.4",
  "serde",
@@ -3239,8 +3243,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-macros"
 version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e30771bd0c2eced89c9a9b416625675985d9a94ef0be9d23a52ad5f78340d6fe"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#dd7259c2023b2c1091af6f4879ff2402730c8910"
 dependencies = [
  "axum",
  "proc-macro2",
@@ -3249,16 +3252,13 @@ dependencies = [
  "serde",
  "serde_json",
  "syn",
- "tokio",
  "turbomcp-protocol",
- "turbomcp-transport",
 ]
 
 [[package]]
 name = "turbomcp-protocol"
 version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab5ccfd33da29684935a0b50ea9f2d0fe79a7bfd492377be37770727bda43855"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#dd7259c2023b2c1091af6f4879ff2402730c8910"
 dependencies = [
  "ahash",
  "arc-swap",
@@ -3291,8 +3291,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-server"
 version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18002029619403b124e65cca5e7f574c1ecf0b534355862a2c22ba7af990dd2b"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#dd7259c2023b2c1091af6f4879ff2402730c8910"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -3326,8 +3325,7 @@ dependencies = [
 [[package]]
 name = "turbomcp-transport"
 version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7aedabac3d1682fe24c6806ed8d8126a7b9485dd948b1f715c68e16f103293df"
+source = "git+https://github.com/oculairmedia/turbomcp.git?branch=feature%2Fflatten-structs#dd7259c2023b2c1091af6f4879ff2402730c8910"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3340,7 +3338,6 @@ dependencies = [
  "dashmap",
  "fastrand",
  "futures",
- "futures-util",
  "hyper",
  "hyper-util",
  "once_cell",
@@ -3351,7 +3348,6 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
- "tokio-tungstenite",
  "tokio-util",
  "tower",
  "tower-http",

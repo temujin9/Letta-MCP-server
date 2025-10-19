@@ -6,12 +6,13 @@
 
 use std::sync::Arc;
 use turbomcp::prelude::*;
+use serde_json::Value;
 
 mod tools;
 
 // Use official Letta SDK
 use letta::{auth::AuthConfig, ClientConfig, LettaClient};
-use tools::agent_advanced;
+use tools::{agent_advanced, file_folder_ops, job_monitor, mcp_ops, memory_unified, source_manager, tool_manager};
 
 /// Main Letta MCP Server
 #[derive(Clone)]
@@ -22,7 +23,7 @@ pub struct LettaServer {
 #[turbomcp::server(
     name = "letta-mcp-server",
     version = "2.0.1",
-    description = "MCP server for Letta AI - comprehensive API coverage with 7 consolidated tools (87 operations)"
+    description = "MCP server for Letta AI - comprehensive API coverage with 7 consolidated tools (97 operations)"
 )]
 impl LettaServer {
     /// Create a new Letta MCP Server instance
@@ -46,21 +47,12 @@ impl LettaServer {
     // CONSOLIDATED TOOL 1: Agent Advanced
     // ========================================
 
-    /// Advanced agent operations hub
-    ///
-    /// Supports 22 operations via discriminator pattern:
-    /// - CRUD: list, create, get, update, delete
-    /// - Tools: list_tools
-    /// - Messaging: send_message
-    /// - Management: export, import, clone, get_config, bulk_delete
-    /// - Advanced: context, reset_messages, summarize, stream
-    /// - Async: async_message, cancel_message
-    /// - Utility: preview_payload, search_messages, get_message, count
-    #[tool]
+    #[tool(description = "Advanced agent operations hub - Supports 22 operations including CRUD (list, create, get, update, delete), tools (list_tools), messaging (send_message), management (export, import, clone, get_config, bulk_delete), advanced (context, reset_messages, summarize, stream), async (async_message, cancel_message), and utility (preview_payload, search_messages, get_message, count) operations.")]
     async fn letta_agent_advanced(
         &self,
         request: agent_advanced::AgentAdvancedRequest,
     ) -> McpResult<String> {
+        // Call handler directly - TurboMCP will auto-detect flattening and use schemars schema
         agent_advanced::handle_agent_advanced(&self.client, request).await
     }
 
@@ -68,42 +60,256 @@ impl LettaServer {
     // CONSOLIDATED TOOL 2: Memory Unified
     // ========================================
 
-    // TODO: Implement letta_memory_unified
-    // 15 operations: list_blocks, create_block, get_block, update_block, attach_block,
-    //                list_passages, create_passage, update_passage, delete_passage, etc.
+    #[tool(description = "Unified Memory Operations Hub - Provides unified interface for all memory operations. Supports 15 operations including core memory (get_core_memory, update_core_memory), blocks (get_block_by_label, list_blocks, create_block, get_block, update_block, attach_block, detach_block, list_agents_using_block), and archival memory (search_archival, list_passages, create_passage, update_passage, delete_passage).")]
+    async fn letta_memory_unified(
+        &self,
+        operation: String,
+        agent_id: Option<String>,
+        block_id: Option<String>,
+        block_label: Option<String>,
+        passage_id: Option<String>,
+        label: Option<String>,
+        value: Option<String>,
+        text: Option<String>,
+        query: Option<String>,
+        limit: Option<i32>,
+        offset: Option<i32>,
+        is_template: Option<bool>,
+    ) -> McpResult<String> {
+        // Parse operation from string
+        let op = serde_json::from_value(serde_json::Value::String(operation))
+            .map_err(|e| McpError::invalid_request(format!("Invalid operation: {}", e)))?;
+
+        // Create request from individual parameters
+        let request = memory_unified::MemoryUnifiedRequest {
+            operation: op,
+            agent_id,
+            block_id,
+            block_label,
+            passage_id,
+            label,
+            value,
+            text,
+            query,
+            limit,
+            offset,
+            is_template,
+            request_heartbeat: None,
+        };
+
+        // Call handler
+        let response = memory_unified::handle_memory_unified(&self.client, request)
+            .await?;
+
+        // Serialize to JSON string for MCP response
+        serde_json::to_string(&response)
+            .map_err(|e| McpError::internal(format!("Failed to serialize response: {}", e)))
+    }
 
     // ========================================
     // CONSOLIDATED TOOL 3: Tool Manager
     // ========================================
 
-    // TODO: Implement letta_tool_manager
-    // 13 operations: attach, create, list, get, update, delete, bulk_attach, etc.
+    #[tool(description = "Tool Manager Operations Hub - Provides unified interface for tool management operations. Supports 13 operations including CRUD (list, get, create, update, delete, upsert), agent operations (attach, detach, bulk_attach), and advanced operations (generate_from_prompt, generate_schema, run_from_source, add_base_tools).")]
+    async fn letta_tool_manager(
+        &self,
+        operation: String,
+        tool_id: Option<String>,
+        agent_id: Option<String>,
+        agent_ids: Option<Vec<String>>,
+        source_code: Option<String>,
+        source_type: Option<String>,
+        tags: Option<Vec<String>>,
+        description: Option<String>,
+        json_schema: Option<Value>,
+        args_json_schema: Option<Value>,
+        return_char_limit: Option<u32>,
+        args: Option<Value>,
+        env_vars: Option<std::collections::HashMap<String, String>>,
+        name: Option<String>,
+    ) -> McpResult<String> {
+        // Parse operation from string
+        let op = serde_json::from_value(serde_json::Value::String(operation))
+            .map_err(|e| McpError::invalid_request(format!("Invalid operation: {}", e)))?;
+
+        // Create request from individual parameters
+        let request = tool_manager::ToolManagerRequest {
+            operation: op,
+            tool_id,
+            agent_id,
+            agent_ids,
+            source_code,
+            source_type,
+            tags,
+            description,
+            json_schema,
+            args_json_schema,
+            return_char_limit,
+            args,
+            env_vars,
+            name,
+            request_heartbeat: None,
+        };
+
+        // Call handler
+        let response = tool_manager::handle_tool_manager(&self.client, request)
+            .await?;
+
+        // Serialize to JSON string for MCP response
+        serde_json::to_string(&response)
+            .map_err(|e| McpError::internal(format!("Failed to serialize response: {}", e)))
+    }
 
     // ========================================
-    // CONSOLIDATED TOOL 4: MCP Operations
+    // CONSOLIDATED TOOL 4: Source Manager
     // ========================================
 
-    // TODO: Implement letta_mcp_ops
-    // 10 operations: list_servers, list_tools, register_tool, etc.
+    #[tool(description = "Source Manager Operations Hub - Provides unified interface for source management operations. Supports 15 operations including CRUD (list, get, create, update, delete, count), agent operations (attach, detach, list_attached), file operations (upload, delete_files, list_files), and folder operations (list_folders, get_folder_contents, list_agents_using).")]
+    async fn letta_source_manager(
+        &self,
+        operation: String,
+        source_id: Option<String>,
+        agent_id: Option<String>,
+        name: Option<String>,
+        description: Option<String>,
+        file_id: Option<String>,
+        file_name: Option<String>,
+        file_data: Option<String>,
+        content_type: Option<String>,
+        limit: Option<i32>,
+        include_content: Option<bool>,
+    ) -> McpResult<String> {
+        // Parse operation from string
+        let op = serde_json::from_value(serde_json::Value::String(operation))
+            .map_err(|e| McpError::invalid_request(format!("Invalid operation: {}", e)))?;
+
+        // Create request from individual parameters
+        let request = source_manager::SourceManagerRequest {
+            operation: op,
+            source_id,
+            agent_id,
+            name,
+            description,
+            file_id,
+            file_name,
+            file_data,
+            content_type,
+            limit,
+            include_content,
+            request_heartbeat: None,
+        };
+
+        // Call handler
+        let response = source_manager::handle_source_manager(&self.client, request)
+            .await?;
+
+        // Serialize to JSON string for MCP response
+        serde_json::to_string(&response)
+            .map_err(|e| McpError::internal(format!("Failed to serialize response: {}", e)))
+    }
 
     // ========================================
-    // CONSOLIDATED TOOL 5: Source Manager
+    // CONSOLIDATED TOOL 5: Job Monitor
     // ========================================
 
-    // TODO: Implement letta_source_manager
-    // 15 operations: create, list, attach, upload, etc.
+    #[tool(description = "Job Monitor Operations Hub - Provides unified interface for job monitoring operations. Supports 4 operations: list (all jobs), get (specific job), cancel (job cancellation), and list_active (active jobs only).")]
+    async fn letta_job_monitor(
+        &self,
+        operation: String,
+        job_id: Option<String>,
+    ) -> McpResult<String> {
+        // Parse operation
+        let op = match operation.as_str() {
+            "list" => job_monitor::JobOperation::List,
+            "get" => job_monitor::JobOperation::Get,
+            "cancel" => job_monitor::JobOperation::Cancel,
+            "list_active" => job_monitor::JobOperation::ListActive,
+            _ => return Err(McpError::invalid_request(format!("Unknown operation: {}", operation))),
+        };
+
+        // Create request from individual parameters
+        let request = job_monitor::JobMonitorRequest {
+            operation: op,
+            job_id,
+            request_heartbeat: None,
+        };
+
+        // Call handler
+        let response = job_monitor::handle_job_monitor(&self.client, request)
+            .await?;
+
+        // Serialize to JSON string for MCP response
+        serde_json::to_string(&response)
+            .map_err(|e| McpError::internal(format!("Failed to serialize response: {}", e)))
+    }
 
     // ========================================
-    // CONSOLIDATED TOOL 6: Job Monitor
+    // CONSOLIDATED TOOL 6: File/Folder Ops
     // ========================================
 
-    // TODO: Implement letta_job_monitor
-    // 4 operations: list, get, cancel, list_active
+    #[tool(description = "File and Folder Management Hub - Provides unified interface for file session management and folder operations. Supports 8 operations including file sessions (list_files, open_file, close_file, close_all_files) and folder operations (list_folders, attach_folder, detach_folder, list_agents_in_folder).")]
+    async fn letta_file_folder_ops(
+        &self,
+        operation: String,
+        agent_id: Option<String>,
+        file_id: Option<String>,
+        folder_id: Option<String>,
+    ) -> McpResult<String> {
+        // Create request from individual parameters
+        let request = file_folder_ops::FileFolderRequest {
+            operation,
+            agent_id,
+            file_id,
+            folder_id,
+            request_heartbeat: None,
+        };
+
+        // Call handler
+        let response = file_folder_ops::handle_file_folder_ops(&self.client, request)
+            .await?;
+
+        // Serialize to JSON string for MCP response
+        serde_json::to_string(&response)
+            .map_err(|e| McpError::internal(format!("Failed to serialize response: {}", e)))
+    }
 
     // ========================================
-    // CONSOLIDATED TOOL 7: File/Folder Ops
+    // CONSOLIDATED TOOL 7: MCP Operations
     // ========================================
 
-    // TODO: Implement letta_file_folder_ops
-    // 8 operations: upload, list_files, create_folder, etc.
+    #[tool(description = "MCP Server Operations Hub - Unified tool for complete MCP server lifecycle management. Supports 10 operations: add, update, delete, test, connect, resync (server management) and list_servers, list_tools, register_tool, execute (tool operations).")]
+    async fn letta_mcp_ops(
+        &self,
+        operation: String,
+        server_name: Option<String>,
+        server_config: Option<Value>,
+        tool_name: Option<String>,
+        tool_args: Option<Value>,
+        oauth_config: Option<Value>,
+        pagination: Option<Value>,
+    ) -> McpResult<String> {
+        // Parse operation from string
+        let op = serde_json::from_value(serde_json::Value::String(operation))
+            .map_err(|e| McpError::invalid_request(format!("Invalid operation: {}", e)))?;
+
+        // Create request from individual parameters
+        let request = mcp_ops::McpOpsRequest {
+            operation: op,
+            server_name,
+            server_config,
+            tool_name,
+            tool_args,
+            oauth_config,
+            pagination,
+            request_heartbeat: None,
+        };
+
+        // Call handler
+        let response = mcp_ops::handle_mcp_ops(&self.client, request)
+            .await?;
+
+        // Serialize to JSON string for MCP response
+        serde_json::to_string(&response)
+            .map_err(|e| McpError::internal(format!("Failed to serialize response: {}", e)))
+    }
 }
