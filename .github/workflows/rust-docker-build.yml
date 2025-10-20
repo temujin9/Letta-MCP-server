@@ -2,7 +2,7 @@ name: Rust Docker Build and Push
 
 on:
   push:
-    branches: [ rust-refactor-turbomcp ]
+    branches: [ rust-implementation ]
     paths:
       - 'rust/**'
       - 'letta-server/**'
@@ -13,7 +13,7 @@ on:
       - 'docker-compose.rust.yml'
       - '.github/workflows/rust-docker-build.yml'
   pull_request:
-    branches: [ rust-refactor-turbomcp ]
+    branches: [ rust-implementation ]
     paths:
       - 'rust/**'
       - 'letta-server/**'
