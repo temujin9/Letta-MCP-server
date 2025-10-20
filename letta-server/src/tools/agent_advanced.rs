@@ -6,9 +6,37 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use turbomcp::McpError;
-use turbomcp_macros::FlattenTool;
 use letta_types::{Message, Pagination, StandardResponse};
 use letta::LettaClient;
+
+/// Wrapper for serde_json::Value that implements JsonSchema with explicit type information.
+/// This allows schemars to properly detect Option<JsonValue> as optional while still
+/// providing the type information that Letta requires.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(transparent)]
+pub struct JsonValue(pub Value);
+
+impl schemars::JsonSchema for JsonValue {
+    fn schema_name() -> std::borrow::Cow<'static, str> {
+        "JsonValue".into()
+    }
+
+    fn schema_id() -> std::borrow::Cow<'static, str> {
+        concat!(module_path!(), "::JsonValue").into()
+    }
+
+    fn json_schema(_gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
+        // Letta prefers simple type definitions without anyOf
+        schemars::json_schema!({
+            "type": "object"
+        })
+    }
+
+    // Force inlining instead of using $ref - Letta may not resolve $refs properly
+    fn inline_schema() -> bool {
+        true
+    }
+}
 
 /// Agent operation discriminator
 #[derive(Debug, Deserialize, Serialize, schemars::JsonSchema)]
@@ -41,7 +69,8 @@ pub enum AgentOperation {
 }
 
 /// Bulk delete filters
-#[derive(Debug, Deserialize, schemars::JsonSchema, FlattenTool)]
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+#[schemars(inline)]
 pub struct BulkDeleteFilters {
     /// Filter agents by name pattern
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -57,7 +86,8 @@ pub struct BulkDeleteFilters {
 }
 
 /// Search filters for messages
-#[derive(Debug, Deserialize, schemars::JsonSchema, FlattenTool)]
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+#[schemars(inline)]
 pub struct SearchFilters {
     /// Filter messages after this date (ISO 8601 format)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -73,7 +103,7 @@ pub struct SearchFilters {
 }
 
 /// Agent advanced request - all parameters are optional except operation
-#[derive(Debug, Deserialize, schemars::JsonSchema, FlattenTool)]
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
 pub struct AgentAdvancedRequest {
     /// The operation to perform (list, create, get, update, delete, send_message, etc.)
     pub operation: AgentOperation,
@@ -96,22 +126,18 @@ pub struct AgentAdvancedRequest {
 
     /// LLM configuration object (for create/update operations)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "value_object_schema")]
-    pub llm_config: Option<Value>,
+    pub llm_config: Option<JsonValue>,
 
     /// Embedding model configuration (for create/update operations)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "value_object_schema")]
-    pub embedding_config: Option<Value>,
+    pub embedding_config: Option<JsonValue>,
 
     /// Tool IDs to attach to agent (for create/update operations)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "value_object_schema")]
-    pub tool_ids: Option<Value>,
+    pub tool_ids: Option<JsonValue>,
 
     /// Pagination settings (for list operations)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "pagination_schema")]
     pub pagination: Option<Pagination>,
 
     /// Messages to send to agent (for send_message operation)
@@ -124,7 +150,6 @@ pub struct AgentAdvancedRequest {
 
     /// Filters for bulk delete operation (agent_name_filter, agent_tag_filter, agent_ids)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "bulk_delete_filters_schema")]
     pub filters: Option<BulkDeleteFilters>,
 
     /// Search query text (for search_messages operation)
@@ -133,47 +158,53 @@ pub struct AgentAdvancedRequest {
 
     /// Search filters (for search_messages operation: start_date, end_date, role)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "search_filters_schema")]
     pub search_filters: Option<SearchFilters>,
 
     /// Agent export data (for import operation)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "value_object_schema")]
-    pub export_data: Option<Value>,
+    pub export_data: Option<JsonValue>,
 
     /// Update data object (for update operation)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(schema_with = "value_object_schema")]
-    pub update_data: Option<Value>,
+    pub update_data: Option<JsonValue>,
 }
 
-/// Schema helper for Value fields - generates object type
-fn value_object_schema(_gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
-    schemars::json_schema!({ "type": "object" })
+/// Schema helper for Pagination - inline object schema without $ref
+fn pagination_schema(_gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({
+        "type": "object",
+        "properties": {
+            "limit": {"type": "integer"},
+            "offset": {"type": "integer"}
+        },
+        "additionalProperties": false
+    })
 }
 
-/// Schema helper for Pagination - adds explicit type to $ref
-fn pagination_schema(gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
-    let mut base_schema = gen.subschema_for::<Pagination>();
-    // Insert the type field into the schema
-    base_schema.insert("type".to_string(), serde_json::json!("object"));
-    base_schema
+/// Schema helper for BulkDeleteFilters - inline object schema without $ref
+fn bulk_delete_filters_schema(_gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({
+        "type": "object",
+        "properties": {
+            "agent_name_filter": {"type": "string"},
+            "agent_tag_filter": {"type": "string"},
+            "agent_ids": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+    })
 }
 
-/// Schema helper for BulkDeleteFilters - adds explicit type to $ref
-fn bulk_delete_filters_schema(gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
-    let mut base_schema = gen.subschema_for::<BulkDeleteFilters>();
-    // Insert the type field into the schema
-    base_schema.insert("type".to_string(), serde_json::json!("object"));
-    base_schema
-}
-
-/// Schema helper for SearchFilters - adds explicit type to $ref
-fn search_filters_schema(gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
-    let mut base_schema = gen.subschema_for::<SearchFilters>();
-    // Insert the type field into the schema
-    base_schema.insert("type".to_string(), serde_json::json!("object"));
-    base_schema
+/// Schema helper for SearchFilters - inline object schema without $ref
+fn search_filters_schema(_gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({
+        "type": "object",
+        "properties": {
+            "start_date": {"type": "string"},
+            "end_date": {"type": "string"},
+            "role": {"type": "string"}
+        },
+        "additionalProperties": false
+    })
 }
 
 /// Main handler for agent advanced operations
@@ -266,20 +297,20 @@ async fn handle_create_agent(
     }
 
     // For complex types, parse from JSON Value to SDK types
-    if let Some(llm_config_value) = request.llm_config {
-        let llm_config: letta::types::LLMConfig = serde_json::from_value(llm_config_value)
+    if let Some(llm_config_wrapper) = request.llm_config {
+        let llm_config: letta::types::LLMConfig = serde_json::from_value(llm_config_wrapper.0)
             .map_err(|e| McpError::invalid_request(format!("Invalid llm_config: {}", e)))?;
         agent_request.llm_config = Some(llm_config);
     }
 
-    if let Some(embedding_config_value) = request.embedding_config {
-        let embedding_config: letta::types::EmbeddingConfig = serde_json::from_value(embedding_config_value)
+    if let Some(embedding_config_wrapper) = request.embedding_config {
+        let embedding_config: letta::types::EmbeddingConfig = serde_json::from_value(embedding_config_wrapper.0)
             .map_err(|e| McpError::invalid_request(format!("Invalid embedding_config: {}", e)))?;
         agent_request.embedding_config = Some(embedding_config);
     }
 
-    if let Some(tool_ids_value) = request.tool_ids {
-        let tool_ids: Vec<letta::types::LettaId> = serde_json::from_value(tool_ids_value)
+    if let Some(tool_ids_wrapper) = request.tool_ids {
+        let tool_ids: Vec<letta::types::LettaId> = serde_json::from_value(tool_ids_wrapper.0)
             .map_err(|e| McpError::invalid_request(format!("Invalid tool_ids: {}", e)))?;
         agent_request.tool_ids = Some(tool_ids);
     }

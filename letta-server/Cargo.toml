@@ -1,0 +1,46 @@
+[package]
+name = "letta-server"
+version = "2.0.1"
+edition = "2021"
+authors = ["Oculair Media"]
+description = "Letta MCP Server - Rust implementation using TurboMCP"
+license = "MIT"
+
+[[bin]]
+name = "letta-server"
+path = "src/main.rs"
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+# TurboMCP - use crates.io versions which are patched to our fork via [patch.crates-io]
+turbomcp = { version = "2.0.0-rc.3", features = ["http", "schemars"] }
+turbomcp-macros = "2.0.0-rc.3"
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+schemars = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+letta = { workspace = true }
+base64 = { workspace = true }
+bytes = { workspace = true }
+
+# TurboMCP internal crates - versions patched via workspace [patch.crates-io]
+turbomcp-protocol = "2.0.0-rc.3"
+turbomcp-server = "2.0.0-rc.3"
+turbomcp-transport = { version = "2.0.0-rc.3", features = ["http"] }
+
+# Local dependencies
+letta-types = { path = "../letta-types" }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = ["http", "schemars"]
+http = ["turbomcp/http"]
+schemars = ["turbomcp/schemars"]

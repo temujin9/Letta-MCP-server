@@ -34,3 +34,17 @@ coverage/
 
 # Optional eslint cache
 .eslintcache
+
+# Rust
+target/
+Cargo.lock
+rust/target/
+rust/vendor/
+*.pdb
+.git-rewrite/
+
+# Rust build artifacts
+**/*.rs.bk
+**/*.orig
+**/*.rlib
+**/deps/
