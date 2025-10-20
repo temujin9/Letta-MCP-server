@@ -88,6 +88,129 @@ letta-mcp --http       # HTTP transport
 letta-mcp --sse        # SSE transport
 ```
 
+## Implementation Options
+
+This repository provides **three different implementations** of the Letta MCP server, allowing you to choose the best option for your use case:
+
+### 🔵 Classic Individual Tools (master branch)
+**Branch:** `master`
+
+The original implementation with individual tools for each API endpoint.
+
+**Best for:**
+- Users who prefer individual, focused tools
+- Compatibility with existing integrations
+- Granular tool selection and control
+- Learning the Letta API one operation at a time
+
+**Docker Images:**
+```bash
+# Latest master branch build
+docker pull ghcr.io/oculairmedia/letta-mcp-server:master
+```
+
+**Features:**
+- 70+ individual tools, each handling one specific operation
+- Direct mapping to Letta API endpoints
+- Simple, straightforward tool names
+- Full MCP protocol support (tools, prompts, resources)
+- Multiple transport protocols (HTTP, SSE, stdio)
+
+### 🟢 Node.js Consolidated Tools (Recommended for most users)
+**Branch:** `nodejs-consolidated-tools`
+
+Modern implementation with 7 consolidated tools using the discriminator pattern.
+
+**Best for:**
+- Production deployments
+- Claude Desktop integration
+- npm package consumers
+- Teams who want fewer tools with more functionality
+
+**Docker Images:**
+```bash
+# Latest stable release
+docker pull ghcr.io/oculairmedia/letta-mcp-server:latest
+
+# Specific version
+docker pull ghcr.io/oculairmedia/letta-mcp-server:2.0.1
+
+# Development branch
+docker pull ghcr.io/oculairmedia/letta-mcp-server:nodejs-consolidated-tools
+```
+
+**Features:**
+- 7 consolidated tools covering 87 operations
+- 93% SDK coverage with official @letta-ai/letta-client
+- Discriminator pattern (use `operation` parameter)
+- Enhanced error handling and validation
+- Full MCP protocol support (tools, prompts, resources)
+- Comprehensive test suite and documentation
+
+### 🦀 Rust Implementation (Performance-focused alternative)
+**Branch:** `rust-implementation`
+
+High-performance implementation built with Rust and the TurboMCP framework.
+
+**Best for:**
+- Resource-constrained environments
+- Maximum performance requirements
+- Low memory footprint needs
+- Teams familiar with Rust
+
+**Docker Images:**
+```bash
+# Latest Rust build
+docker pull ghcr.io/oculairmedia/letta-mcp-server-rust:rust-latest
+
+# Development branch
+docker pull ghcr.io/oculairmedia/letta-mcp-server-rust:rust-implementation
+```
+
+**Features:**
+- Same 7 consolidated tools with full feature parity
+- Built on TurboMCP framework for MCP protocol
+- Compile-time type safety and validation
+- Lower memory usage and faster execution
+- Multi-architecture Docker builds (amd64, arm64)
+
+### Comparison
+
+| Feature | Classic (master) | Node.js Consolidated | Rust |
+|---------|------------------|---------------------|------|
+| **Tool Count** | 70+ individual | 7 consolidated | 7 consolidated |
+| **API Pattern** | One tool per endpoint | Discriminator pattern | Discriminator pattern |
+| **Maturity** | ✅ Original | ✅ Production-ready | 🟡 Stable, newer |
+| **Performance** | Good | Good | Excellent |
+| **Memory Usage** | ~50-100MB | ~50-100MB | ~10-30MB |
+| **Startup Time** | ~1-2s | ~1-2s | ~100-500ms |
+| **SDK Integration** | Direct API calls | 93% official SDK | Custom API client |
+| **Type Safety** | Runtime validation | TypeScript (runtime) | Rust (compile-time) |
+| **Package Manager** | npm | npm | Docker/Cargo |
+| **Use Case** | Simple, focused | Production, feature-rich | Performance-critical |
+
+### Choosing an Implementation
+
+**Use Classic (master) if:**
+- You prefer individual, single-purpose tools
+- You're already using the original implementation
+- You want simple, straightforward tool names
+- You're learning the Letta API
+
+**Use Node.js Consolidated if:**
+- You need a battle-tested, production-ready solution
+- You want fewer tools with comprehensive functionality
+- You're using npm packages or Claude Desktop
+- You want SDK-powered reliability and type safety
+
+**Use Rust if:**
+- You need maximum performance
+- You're running in resource-constrained environments (edge, embedded)
+- You prefer compile-time safety guarantees
+- You're comfortable with Docker-based deployment
+
+All three implementations provide identical functionality and MCP protocol compliance. You can switch between them at any time without changing your Letta instance configuration.
+
 ## Quick Setup
 
 ### Option 1: Run from source
