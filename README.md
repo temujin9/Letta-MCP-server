@@ -92,6 +92,97 @@ letta-mcp --http       # HTTP transport
 letta-mcp --sse        # SSE transport
 ```
 
+## Implementation Options
+
+This repository provides **two complete implementations** of the Letta MCP server, allowing you to choose the best option for your use case:
+
+### 🟢 Node.js Implementation (Recommended for most users)
+**Branch:** `nodejs-consolidated-tools`
+
+The mature, production-ready implementation with comprehensive testing and npm distribution.
+
+**Best for:**
+- Production deployments
+- Claude Desktop integration
+- npm package consumers
+- Teams familiar with TypeScript/JavaScript
+
+**Docker Images:**
+```bash
+# Latest stable release
+docker pull ghcr.io/oculairmedia/letta-mcp-server:latest
+
+# Specific version
+docker pull ghcr.io/oculairmedia/letta-mcp-server:2.0.1
+
+# Development branch
+docker pull ghcr.io/oculairmedia/letta-mcp-server:nodejs-consolidated-tools
+```
+
+**Features:**
+- 7 consolidated tools covering 87 operations
+- 93% SDK coverage with official @letta-ai/letta-client
+- Full MCP protocol support (tools, prompts, resources)
+- Multiple transport protocols (HTTP, SSE, stdio)
+- Comprehensive test suite and documentation
+
+### 🦀 Rust Implementation (Performance-focused alternative)
+**Branch:** `rust-implementation`
+
+High-performance implementation built with Rust and the TurboMCP framework.
+
+**Best for:**
+- Resource-constrained environments
+- Maximum performance requirements
+- Low memory footprint needs
+- Teams familiar with Rust
+
+**Docker Images:**
+```bash
+# Latest Rust build
+docker pull ghcr.io/oculairmedia/letta-mcp-server-rust:rust-latest
+
+# Development branch
+docker pull ghcr.io/oculairmedia/letta-mcp-server-rust:rust-implementation
+```
+
+**Features:**
+- Same 7 consolidated tools with full feature parity
+- Built on TurboMCP framework for MCP protocol
+- Compile-time type safety and validation
+- Lower memory usage and faster execution
+- Multi-architecture Docker builds (amd64, arm64)
+
+### Comparison
+
+| Feature | Node.js | Rust |
+|---------|---------|------|
+| **Maturity** | ✅ Production-ready | 🟡 Stable, newer |
+| **Performance** | Good | Excellent |
+| **Memory Usage** | ~50-100MB | ~10-30MB |
+| **Startup Time** | ~1-2s | ~100-500ms |
+| **SDK Integration** | 93% official SDK | Custom API client |
+| **Type Safety** | TypeScript (runtime) | Rust (compile-time) |
+| **Package Manager** | npm | Docker/Cargo |
+| **Test Coverage** | Comprehensive | Core operations verified |
+| **Documentation** | Extensive | Good |
+
+### Choosing an Implementation
+
+**Use Node.js if:**
+- You need a battle-tested, production-ready solution
+- You're already using npm packages
+- You want extensive documentation and examples
+- You're integrating with Claude Desktop
+
+**Use Rust if:**
+- You need maximum performance
+- You're running in resource-constrained environments (edge, embedded)
+- You prefer compile-time safety guarantees
+- You're comfortable with Docker-based deployment
+
+Both implementations provide identical functionality and MCP protocol compliance. You can switch between them at any time without changing your client code.
+
 ## Quick Setup
 
 ### Option 1: Run from source
