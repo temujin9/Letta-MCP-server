@@ -58,7 +58,7 @@ export function validateResponse(schema, data, options = {}) {
             // In strict mode, throw the validation error
             throw new Error(
                 `Response validation failed for ${context}: ${error.message}\n` +
-                `Issues: ${JSON.stringify(error.errors || [], null, 2)}`
+                    `Issues: ${JSON.stringify(error.errors || [], null, 2)}`,
             );
         }
 
@@ -97,7 +97,7 @@ export function validateData(schema, data, context = 'data') {
 
         throw new Error(
             `Data validation failed for ${context}: ${error.message}\n` +
-            `Issues: ${JSON.stringify(error.errors || [], null, 2)}`
+                `Issues: ${JSON.stringify(error.errors || [], null, 2)}`,
         );
     }
 }

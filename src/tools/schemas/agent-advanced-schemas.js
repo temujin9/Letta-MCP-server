@@ -258,4 +258,3 @@ export const MessageSummarySchema = {
     required: ['id', 'role'],
     additionalProperties: false,
 };
-

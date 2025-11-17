@@ -34,3 +34,15 @@ coverage/
 
 # Optional eslint cache
 .eslintcache
+
+# Letta and Serena cache directories
+.letta/
+.serena/
+
+# Rust build artifacts
+rust/
+target/
+Cargo.lock
+
+# Nested git repositories
+letta-mcp-server/

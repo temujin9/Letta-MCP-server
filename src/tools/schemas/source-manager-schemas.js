@@ -100,7 +100,8 @@ export const sourceManagerInputSchema = {
         },
         source_id: {
             type: 'string',
-            description: 'Source ID (required for get, update, delete, upload_file, list_files, list_passages)',
+            description:
+                'Source ID (required for get, update, delete, upload_file, list_files, list_passages)',
         },
         agent_id: {
             type: 'string',
@@ -182,4 +183,3 @@ export const PassageSchema = {
     required: ['id', 'text'],
     additionalProperties: false,
 };
-
