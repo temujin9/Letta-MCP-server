@@ -92,4 +92,3 @@ export const JobStatusSchema = {
     required: ['id', 'status', 'job_type'],
     additionalProperties: false,
 };
-

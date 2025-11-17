@@ -24,9 +24,9 @@ export async function handleRetrieveAgent(server, args) {
             system: agentState.system,
             llm_config: agentState.llm_config,
             embedding_config: agentState.embedding_config,
-            tool_ids: agentState.tool_ids || [],           // Just IDs, not full tool objects
-            source_ids: agentState.source_ids || [],       // Just IDs, not full source objects
-            block_ids: agentState.block_ids || [],         // Just IDs, not full block objects
+            tool_ids: agentState.tool_ids || [], // Just IDs, not full tool objects
+            source_ids: agentState.source_ids || [], // Just IDs, not full source objects
+            block_ids: agentState.block_ids || [], // Just IDs, not full block objects
             message_count: agentState.message_count,
             created_at: agentState.created_at,
             updated_at: agentState.updated_at,

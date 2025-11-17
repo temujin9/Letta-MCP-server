@@ -89,4 +89,3 @@ export const AgentReferenceSchema = {
     required: ['id', 'name'],
     additionalProperties: false,
 };
-

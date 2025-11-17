@@ -146,7 +146,6 @@ describe('Use Prompt Tool', () => {
             expect(parsedContent.messages).toBe(3);
         });
 
-
         it('should handle preview of long messages', async () => {
             const longText = 'A'.repeat(300);
             const messages = [

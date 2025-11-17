@@ -204,4 +204,3 @@ export const ToolSummarySchema = {
     required: ['id', 'name'],
     additionalProperties: false,
 };
-

@@ -95,19 +95,23 @@ async function handleListAgents(server, args) {
     // SDK returns array directly
     const agents = Array.isArray(result) ? result : [];
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'list',
-                    agents: agents.map((agent) => ({
-                        id: agent.id,
-                        name: agent.name,
-                        description: agent.description,
-                        created_at: agent.created_at,
-                        updated_at: agent.updated_at,
-                    })),
-                    total: agents.length,
-                    message: `Found ${agents.length} agents`,
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'list',
+            agents: agents.map((agent) => ({
+                id: agent.id,
+                name: agent.name,
+                description: agent.description,
+                created_at: agent.created_at,
+                updated_at: agent.updated_at,
+            })),
+            total: agents.length,
+            message: `Found ${agents.length} agents`,
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -126,18 +130,22 @@ async function handleCreateAgent(server, args) {
         return await server.client.agents.create(agent_data);
     }, 'Creating agent');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'create',
-                    agent_id: result.id,
-                    agent: {
-                        id: result.id,
-                        name: result.name,
-                        description: result.description,
-                        created_at: result.created_at,
-                    },
-                    message: 'Agent created successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'create',
+            agent_id: result.id,
+            agent: {
+                id: result.id,
+                name: result.name,
+                description: result.description,
+                created_at: result.created_at,
+            },
+            message: 'Agent created successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -174,13 +182,17 @@ async function handleGetAgent(server, args) {
         updated_at: result.updated_at,
     };
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'get',
-                    agent_id,
-                    agent: trimmedAgent,
-                    message: 'Agent retrieved successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'get',
+            agent_id,
+            agent: trimmedAgent,
+            message: 'Agent retrieved successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -202,13 +214,17 @@ async function handleUpdateAgent(server, args) {
         return await server.client.agents.modify(agent_id, agent_data);
     }, 'Updating agent');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'update',
-                    agent_id,
-                    agent: result,
-                    message: 'Agent updated successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'update',
+            agent_id,
+            agent: result,
+            message: 'Agent updated successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -227,13 +243,17 @@ async function handleDeleteAgent(server, args) {
         return await server.client.agents.delete(agent_id);
     }, 'Deleting agent');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'delete',
-                    agent_id,
-                    deleted: true,
-                    message: 'Agent deleted successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'delete',
+            agent_id,
+            deleted: true,
+            message: 'Agent deleted successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -254,18 +274,22 @@ async function handleListAgentTools(server, args) {
 
     const tools = Array.isArray(result) ? result : [];
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'list_tools',
-                    agent_id,
-                    tools: tools.map((tool) => ({
-                        id: tool.id,
-                        name: tool.name,
-                        description: tool.description,
-                        tags: tool.tags || [],
-                    })),
-                    message: `Found ${tools.length} tools`,
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'list_tools',
+            agent_id,
+            tools: tools.map((tool) => ({
+                id: tool.id,
+                name: tool.name,
+                description: tool.description,
+                tags: tool.tags || [],
+            })),
+            message: `Found ${tools.length} tools`,
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -289,13 +313,17 @@ async function handleSendMessage(server, args) {
         });
     }, 'Sending message to agent');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'send_message',
-                    agent_id,
-                    response: result,
-                    message: 'Message sent successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'send_message',
+            agent_id,
+            response: result,
+            message: 'Message sent successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -314,14 +342,18 @@ async function handleExportAgent(server, args) {
         return await server.client.agents.exportFile(agent_id);
     }, 'Exporting agent configuration');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'export',
-                    agent_id,
-                    export_data: JSON.parse(exportData),
-                    file_path: file_path || `agent_${agent_id}.json`,
-                    message: 'Agent exported successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'export',
+            agent_id,
+            export_data: JSON.parse(exportData),
+            file_path: file_path || `agent_${agent_id}.json`,
+            message: 'Agent exported successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -341,13 +373,17 @@ async function handleImportAgent(server, args) {
         return await server.client.agents.create(agent_data);
     }, 'Importing agent');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'import',
-                    agent_id: result.id,
-                    agent: result,
-                    message: 'Agent imported successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'import',
+            agent_id: result.id,
+            agent: result,
+            message: 'Agent imported successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -380,14 +416,18 @@ async function handleCloneAgent(server, args) {
         return await server.client.agents.create(cloneData);
     }, 'Creating cloned agent');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'clone',
-                    source_agent_id: agent_id,
-                    new_agent_id: result.id,
-                    new_agent_name,
-                    message: 'Agent cloned successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'clone',
+            source_agent_id: agent_id,
+            new_agent_id: result.id,
+            new_agent_name,
+            message: 'Agent cloned successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -414,22 +454,26 @@ async function handleGetConfig(server, args) {
 
     const toolsList = Array.isArray(tools) ? tools : [];
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'get_config',
-                    agent_id,
-                    config: {
-                        name: agent.name,
-                        description: agent.description,
-                        system: agent.system,
-                        llm_config: agent.llm_config,
-                        embedding_config: agent.embedding_config,
-                        tools: toolsList.map((t) => ({ id: t.id, name: t.name })),
-                        created_at: agent.created_at,
-                        updated_at: agent.updated_at,
-                    },
-                    message: 'Agent configuration retrieved successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'get_config',
+            agent_id,
+            config: {
+                name: agent.name,
+                description: agent.description,
+                system: agent.system,
+                llm_config: agent.llm_config,
+                embedding_config: agent.embedding_config,
+                tools: toolsList.map((t) => ({ id: t.id, name: t.name })),
+                created_at: agent.created_at,
+                updated_at: agent.updated_at,
+            },
+            message: 'Agent configuration retrieved successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -493,14 +537,18 @@ async function handleBulkDelete(server, args) {
 
     const successCount = deleteResults.filter((r) => r.success).length;
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'bulk_delete',
-                    deleted_count: successCount,
-                    failed_count: deleteResults.length - successCount,
-                    results: deleteResults,
-                    message: `Deleted ${successCount} agents successfully`,
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'bulk_delete',
+            deleted_count: successCount,
+            failed_count: deleteResults.length - successCount,
+            results: deleteResults,
+            message: `Deleted ${successCount} agents successfully`,
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -518,13 +566,17 @@ async function handleGetContext(server, args) {
         return await server.client.agents.context.retrieve(agent_id);
     }, 'Getting agent context');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'context',
-                    agent_id,
-                    context: result,
-                    message: 'Context retrieved successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'context',
+            agent_id,
+            context: result,
+            message: 'Context retrieved successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -546,13 +598,17 @@ async function handleResetMessages(server, args) {
     // SDK returns AgentState, extract message count if available
     const resetCount = result.message_count || result.messages?.length || 0;
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'reset_messages',
-                    agent_id,
-                    reset_count: resetCount,
-                    message: `Messages reset successfully`,
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'reset_messages',
+            agent_id,
+            reset_count: resetCount,
+            message: `Messages reset successfully`,
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -572,12 +628,16 @@ async function handleSummarize(server, args) {
         return await server.client.agents.messages.summarize(agent_id, { maxMessageLength: 1000 });
     }, 'Generating conversation summary');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'summarize',
-                    agent_id,
-                    message: 'Summary generated successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'summarize',
+            agent_id,
+            message: 'Summary generated successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -606,14 +666,18 @@ async function handleStream(server, args) {
 
     // Note: Stream object cannot be easily serialized over MCP
     // This operation may need transport-specific handling
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'stream',
-                    agent_id,
-                    message:
-                        'Stream initiated via SDK. Note: Stream object requires special handling for MCP transport.',
-                    stream_type: typeof stream,
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'stream',
+            agent_id,
+            message:
+                'Stream initiated via SDK. Note: Stream object requires special handling for MCP transport.',
+            stream_type: typeof stream,
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -637,13 +701,17 @@ async function handleAsyncMessage(server, args) {
         });
     }, 'Sending async message');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'async_message',
-                    agent_id,
-                    async_job_id: result.id,
-                    message: 'Async message sent. Use job_id to track progress.',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'async_message',
+            agent_id,
+            async_job_id: result.id,
+            message: 'Async message sent. Use job_id to track progress.',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -666,14 +734,18 @@ async function handleCancelMessage(server, args) {
         return await server.client.agents.messages.cancel(agent_id, { runIds: [message_id] });
     }, 'Cancelling message');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'cancel_message',
-                    agent_id,
-                    message_id,
-                    cancelled: true,
-                    message: 'Message cancelled successfully',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'cancel_message',
+            agent_id,
+            message_id,
+            cancelled: true,
+            message: 'Message cancelled successfully',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -697,13 +769,17 @@ async function handlePreviewPayload(server, args) {
         });
     }, 'Generating payload preview');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'preview_payload',
-                    agent_id,
-                    raw_payload: result,
-                    message: 'Payload preview generated',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'preview_payload',
+            agent_id,
+            raw_payload: result,
+            message: 'Payload preview generated',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -730,19 +806,23 @@ async function handleSearchMessages(server, args) {
 
         const messages = Array.isArray(result) ? result : [];
 
-        return validateResponse(AgentResponseSchema, {
-                        success: true,
-                        operation: 'search_messages',
-                        agent_id,
-                        messages: messages.map((msg) => ({
-                            id: msg.id,
-                            role: msg.role,
-                            content: msg.content || msg.text,
-                            timestamp: msg.timestamp || msg.created_at,
-                            agent_id: msg.agent_id,
-                        })),
-                        message: `Found ${messages.length} messages`,
-                    }, { context: 'agent_ops' });
+        return validateResponse(
+            AgentResponseSchema,
+            {
+                success: true,
+                operation: 'search_messages',
+                agent_id,
+                messages: messages.map((msg) => ({
+                    id: msg.id,
+                    role: msg.role,
+                    content: msg.content || msg.text,
+                    timestamp: msg.timestamp || msg.created_at,
+                    agent_id: msg.agent_id,
+                })),
+                message: `Found ${messages.length} messages`,
+            },
+            { context: 'agent_ops' },
+        );
     } catch (error) {
         // If search fails (e.g., on self-hosted), fall back to listing messages
         const messages = await server.handleSdkCall(async () => {
@@ -764,20 +844,24 @@ async function handleSearchMessages(server, args) {
               })
             : [];
 
-        return validateResponse(AgentResponseSchema, {
-                        success: true,
-                        operation: 'search_messages',
-                        agent_id,
-                        messages: filtered.map((msg) => ({
-                            id: msg.id,
-                            role: msg.role,
-                            content: msg.content || msg.text,
-                            timestamp: msg.timestamp || msg.created_at,
-                            agent_id: msg.agent_id,
-                        })),
-                        message: `Found ${filtered.length} messages (using list fallback)`,
-                        note: 'Search API unavailable, used list with client-side filtering',
-                    }, { context: 'agent_ops' });
+        return validateResponse(
+            AgentResponseSchema,
+            {
+                success: true,
+                operation: 'search_messages',
+                agent_id,
+                messages: filtered.map((msg) => ({
+                    id: msg.id,
+                    role: msg.role,
+                    content: msg.content || msg.text,
+                    timestamp: msg.timestamp || msg.created_at,
+                    agent_id: msg.agent_id,
+                })),
+                message: `Found ${filtered.length} messages (using list fallback)`,
+                note: 'Search API unavailable, used list with client-side filtering',
+            },
+            { context: 'agent_ops' },
+        );
     }
 }
 
@@ -807,20 +891,24 @@ async function handleGetMessage(server, args) {
         throw new Error(`Message ${message_id} not found`);
     }
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'get_message',
-                    agent_id,
-                    message_id,
-                    message: {
-                        id: result.id,
-                        role: result.role,
-                        content: result.content || result.text,
-                        timestamp: result.timestamp || result.created_at,
-                        tool_calls: result.tool_calls || [],
-                    },
-                    note: 'Retrieved via list and filter (SDK has no direct message retrieve method)',
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'get_message',
+            agent_id,
+            message_id,
+            message: {
+                id: result.id,
+                role: result.role,
+                content: result.content || result.text,
+                timestamp: result.timestamp || result.created_at,
+                tool_calls: result.tool_calls || [],
+            },
+            note: 'Retrieved via list and filter (SDK has no direct message retrieve method)',
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**
@@ -837,15 +925,19 @@ async function handleCount(server, args) {
         return await server.client.agents.count();
     }, 'Counting agents');
 
-    return validateResponse(AgentResponseSchema, {
-                    success: true,
-                    operation: 'count',
-                    count,
-                    message: `Total agents: ${count}`,
-                    note: agent_id
-                        ? 'Agent-specific message counting requires using list operation with filters'
-                        : undefined,
-                }, { context: 'agent_ops' });
+    return validateResponse(
+        AgentResponseSchema,
+        {
+            success: true,
+            operation: 'count',
+            count,
+            message: `Total agents: ${count}`,
+            note: agent_id
+                ? 'Agent-specific message counting requires using list operation with filters'
+                : undefined,
+        },
+        { context: 'agent_ops' },
+    );
 }
 
 /**

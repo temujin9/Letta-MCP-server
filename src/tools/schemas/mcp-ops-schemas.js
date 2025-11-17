@@ -161,4 +161,3 @@ export const mcpOpsInputSchema = {
     required: ['operation'],
     additionalProperties: true,
 };
-

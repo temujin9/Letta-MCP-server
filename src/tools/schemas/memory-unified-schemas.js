@@ -209,4 +209,3 @@ export const ArchivalResultSchema = {
     required: ['id', 'text'],
     additionalProperties: false,
 };
-

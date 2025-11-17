@@ -19,16 +19,24 @@ export const BaseResponseSchema = z.object({
 export const McpServerResponseSchema = BaseResponseSchema.extend({
     server_name: z.string().optional().describe('Name of the MCP server'),
     server_config: z.any().optional().describe('Server configuration'),
-    servers: z.array(z.object({
-        name: z.string(),
-        type: z.string(),
-        status: z.string(),
-    })).optional().describe('List of servers'),
-    test_result: z.object({
-        connected: z.boolean(),
-        latency_ms: z.number().optional(),
-        error: z.string().optional(),
-    }).optional().describe('Test connection result'),
+    servers: z
+        .array(
+            z.object({
+                name: z.string(),
+                type: z.string(),
+                status: z.string(),
+            }),
+        )
+        .optional()
+        .describe('List of servers'),
+    test_result: z
+        .object({
+            connected: z.boolean(),
+            latency_ms: z.number().optional(),
+            error: z.string().optional(),
+        })
+        .optional()
+        .describe('Test connection result'),
     execution_result: z.any().optional().describe('Result from tool execution'),
     oauth_url: z.string().url().optional().describe('OAuth authorization URL'),
     tool_id: z.string().optional().describe('Registered tool ID'),
