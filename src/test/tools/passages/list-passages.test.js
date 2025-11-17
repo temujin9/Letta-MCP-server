@@ -29,11 +29,13 @@ describe('List Passages', () => {
             expect(listPassagesDefinition.inputSchema.properties).toHaveProperty('before');
             expect(listPassagesDefinition.inputSchema.properties).toHaveProperty('limit');
             expect(listPassagesDefinition.inputSchema.properties).toHaveProperty('search');
+            expect(listPassagesDefinition.inputSchema.properties).toHaveProperty('order');
             expect(listPassagesDefinition.inputSchema.properties).toHaveProperty('ascending');
             expect(listPassagesDefinition.inputSchema.properties).toHaveProperty(
                 'include_embeddings',
             );
-            expect(listPassagesDefinition.inputSchema.properties.ascending.default).toBe(true);
+            expect(listPassagesDefinition.inputSchema.properties.order.default).toBe('asc');
+            expect(listPassagesDefinition.inputSchema.properties.ascending.deprecated).toBe(true);
             expect(listPassagesDefinition.inputSchema.properties.include_embeddings.default).toBe(
                 false,
             );
@@ -225,10 +227,11 @@ describe('List Passages', () => {
                 ascending: true,
             });
 
+            // SDK v1.0: ascending: true is converted to order: 'asc'
             expect(mockServer.api.get).toHaveBeenCalledWith(
                 `/agents/${agentId}/archival-memory`,
                 expect.objectContaining({
-                    params: { ascending: true },
+                    params: { order: 'asc' },
                 }),
             );
 
@@ -250,10 +253,11 @@ describe('List Passages', () => {
                 ascending: false,
             });
 
+            // SDK v1.0: ascending: false is converted to order: 'desc'
             expect(mockServer.api.get).toHaveBeenCalledWith(
                 `/agents/${agentId}/archival-memory`,
                 expect.objectContaining({
-                    params: { ascending: false },
+                    params: { order: 'desc' },
                 }),
             );
 
@@ -287,6 +291,7 @@ describe('List Passages', () => {
                 ...params,
             });
 
+            // SDK v1.0: ascending: false is converted to order: 'desc'
             expect(mockServer.api.get).toHaveBeenCalledWith(
                 `/agents/${agentId}/archival-memory`,
                 expect.objectContaining({
@@ -295,7 +300,7 @@ describe('List Passages', () => {
                         before: params.before,
                         limit: params.limit,
                         search: params.search,
-                        ascending: params.ascending,
+                        order: 'desc', // converted from ascending: false
                     },
                 }),
             );
