@@ -21,12 +21,14 @@ export class LettaServer {
         // provide a minimal fallback logger so tests don't throw when
         // calling `this.logger.error` or `this.logger.info`.
         if (!this.logger || typeof this.logger.error !== 'function') {
+            /* eslint-disable no-console */
             this.logger = {
                 info: (...args) => console.log(...args),
                 error: (...args) => console.error(...args),
                 warn: (...args) => console.warn(...args),
                 child: () => this.logger,
             };
+            /* eslint-enable no-console */
         }
 
         // Initialize MCP server

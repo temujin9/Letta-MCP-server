@@ -3,10 +3,10 @@
  * Provides unified interface for all memory operations
  */
 import { createLogger } from '../../core/logger.js';
+import { validateResponse } from '../../core/response-validator.js';
+import { MemoryResponseSchema } from '../schemas/response-schemas.js';
 // eslint-disable-next-line no-unused-vars
-import {
-    memoryUnifiedInputSchema,
-} from '../schemas/memory-unified-schemas.js';
+import { memoryUnifiedInputSchema } from '../schemas/memory-unified-schemas.js';
 
 const logger = createLogger('letta_memory_unified');
 
@@ -81,17 +81,21 @@ async function handleGetCoreMemory(server, args) {
         return await server.client.agents.coreMemory.retrieve(agent_id);
     }, 'Getting core memory');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'get_core_memory',
-                    agent_id,
-                    core_memory: {
-                        persona: result.persona || result.core_memory?.persona || '',
-                        human: result.human || result.core_memory?.human || '',
-                        ...result.core_memory,
-                    },
-                    message: 'Core memory retrieved successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'get_core_memory',
+            agent_id,
+            core_memory: {
+                persona: result.persona || result.core_memory?.persona || '',
+                human: result.human || result.core_memory?.human || '',
+                ...result.core_memory,
+            },
+            message: 'Core memory retrieved successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -135,14 +139,18 @@ async function handleUpdateCoreMemory(server, args) {
         return await server.client.agents.coreMemory.retrieve(agent_id);
     }, 'Getting updated core memory');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'update_core_memory',
-                    agent_id,
-                    core_memory: result.core_memory || result,
-                    updates_applied: updates.length,
-                    message: 'Core memory updated successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'update_core_memory',
+            agent_id,
+            core_memory: result.core_memory || result,
+            updates_applied: updates.length,
+            message: 'Core memory updated successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -164,19 +172,23 @@ async function handleGetBlockByLabel(server, args) {
         return await server.client.agents.blocks.retrieve(agent_id, block_label);
     }, 'Getting memory block by label');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'get_block_by_label',
-                    agent_id,
-                    block_label,
-                    block: {
-                        id: result.id,
-                        label: result.label,
-                        value: result.value,
-                        limit: result.limit,
-                    },
-                    message: 'Memory block retrieved successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'get_block_by_label',
+            agent_id,
+            block_label,
+            block: {
+                id: result.id,
+                label: result.label,
+                value: result.value,
+                limit: result.limit,
+            },
+            message: 'Memory block retrieved successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -197,18 +209,22 @@ async function handleListBlocks(server, args) {
 
     const blocks = Array.isArray(result) ? result : result.blocks || [];
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'list_blocks',
-                    agent_id,
-                    blocks: blocks.map((block) => ({
-                        id: block.id,
-                        label: block.label,
-                        value: block.value,
-                        limit: block.limit,
-                    })),
-                    message: `Found ${blocks.length} memory blocks`,
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'list_blocks',
+            agent_id,
+            blocks: blocks.map((block) => ({
+                id: block.id,
+                label: block.label,
+                value: block.value,
+                limit: block.limit,
+            })),
+            message: `Found ${blocks.length} memory blocks`,
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -233,18 +249,22 @@ async function handleCreateBlock(server, args) {
         return await server.client.blocks.create(block_data);
     }, 'Creating memory block');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'create_block',
-                    block_id: result.id,
-                    block: {
-                        id: result.id,
-                        label: result.label,
-                        value: result.value,
-                        limit: result.limit,
-                    },
-                    message: 'Memory block created successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'create_block',
+            block_id: result.id,
+            block: {
+                id: result.id,
+                label: result.label,
+                value: result.value,
+                limit: result.limit,
+            },
+            message: 'Memory block created successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -263,18 +283,22 @@ async function handleGetBlock(server, args) {
         return await server.client.blocks.retrieve(block_id);
     }, 'Getting memory block');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'get_block',
-                    block_id,
-                    block: {
-                        id: result.id,
-                        label: result.label,
-                        value: result.value,
-                        limit: result.limit,
-                    },
-                    message: 'Memory block retrieved successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'get_block',
+            block_id,
+            block: {
+                id: result.id,
+                label: result.label,
+                value: result.value,
+                limit: result.limit,
+            },
+            message: 'Memory block retrieved successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -296,13 +320,17 @@ async function handleUpdateBlock(server, args) {
         return await server.client.blocks.modify(block_id, block_data);
     }, 'Updating memory block');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'update_block',
-                    block_id,
-                    block: result,
-                    message: 'Memory block updated successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'update_block',
+            block_id,
+            block: result,
+            message: 'Memory block updated successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -324,15 +352,19 @@ async function handleAttachBlock(server, args) {
         return await server.client.agents.blocks.attach(agent_id, block_id);
     }, 'Attaching memory block to agent');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'attach_block',
-                    agent_id,
-                    block_id,
-                    attached: true,
-                    agent_state: result, // SDK returns AgentState
-                    message: 'Memory block attached to agent successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'attach_block',
+            agent_id,
+            block_id,
+            attached: true,
+            agent_state: result, // SDK returns AgentState
+            message: 'Memory block attached to agent successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -354,15 +386,19 @@ async function handleDetachBlock(server, args) {
         return await server.client.agents.blocks.detach(agent_id, block_id);
     }, 'Detaching memory block');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'detach_block',
-                    agent_id,
-                    block_id,
-                    detached: true,
-                    agent_state: result, // SDK returns AgentState
-                    message: 'Memory block detached successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'detach_block',
+            agent_id,
+            block_id,
+            detached: true,
+            agent_state: result, // SDK returns AgentState
+            message: 'Memory block detached successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -403,16 +439,20 @@ async function handleListAgentsUsingBlock(server, args) {
         agents = Array.isArray(result) ? result : result.agents || [];
     }
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'list_agents_using_block',
-                    block_id,
-                    agents: agents.map((agent) => ({
-                        id: agent.id,
-                        name: agent.name || agent.agent_name,
-                    })),
-                    message: `Found ${agents.length} agents using this block`,
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'list_agents_using_block',
+            block_id,
+            agents: agents.map((agent) => ({
+                id: agent.id,
+                name: agent.name || agent.agent_name,
+            })),
+            message: `Found ${agents.length} agents using this block`,
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -439,18 +479,22 @@ async function handleSearchArchival(server, args) {
 
     const searchResults = Array.isArray(result) ? result : result.results || result.passages || [];
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'search_archival',
-                    agent_id,
-                    search_results: searchResults.map((item) => ({
-                        id: item.id,
-                        text: item.text || item.content,
-                        timestamp: item.timestamp || item.created_at,
-                        similarity_score: item.similarity_score || item.score || 0,
-                    })),
-                    message: `Found ${searchResults.length} results`,
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'search_archival',
+            agent_id,
+            search_results: searchResults.map((item) => ({
+                id: item.id,
+                text: item.text || item.content,
+                timestamp: item.timestamp || item.created_at,
+                similarity_score: item.similarity_score || item.score || 0,
+            })),
+            message: `Found ${searchResults.length} results`,
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -471,17 +515,21 @@ async function handleListPassages(server, args) {
 
     const passages = Array.isArray(result) ? result : result.passages || result.results || [];
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'list_passages',
-                    agent_id,
-                    passages: passages.map((p) => ({
-                        id: p.id,
-                        text: p.text || p.content,
-                        timestamp: p.timestamp || p.created_at,
-                    })),
-                    message: `Found ${passages.length} passages`,
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'list_passages',
+            agent_id,
+            passages: passages.map((p) => ({
+                id: p.id,
+                text: p.text || p.content,
+                timestamp: p.timestamp || p.created_at,
+            })),
+            message: `Found ${passages.length} passages`,
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -511,18 +559,22 @@ async function handleCreatePassage(server, args) {
     const passages = Array.isArray(result) ? result : [result];
     const firstPassage = passages[0] || result;
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'create_passage',
-                    agent_id,
-                    passage_id: firstPassage.id,
-                    passage: {
-                        id: firstPassage.id,
-                        text: firstPassage.text || firstPassage.content,
-                        timestamp: firstPassage.timestamp || firstPassage.created_at,
-                    },
-                    message: 'Passage created successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'create_passage',
+            agent_id,
+            passage_id: firstPassage.id,
+            passage: {
+                id: firstPassage.id,
+                text: firstPassage.text || firstPassage.content,
+                timestamp: firstPassage.timestamp || firstPassage.created_at,
+            },
+            message: 'Passage created successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -550,13 +602,17 @@ async function handleUpdatePassage(server, args) {
         return await server.client.agents.passages.modify(agent_id, passage_id);
     }, 'Updating passage');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'update_passage',
-                    agent_id,
-                    passage_id,
-                    message: 'Passage updated successfully (SDK returns void)',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'update_passage',
+            agent_id,
+            passage_id,
+            message: 'Passage updated successfully (SDK returns void)',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**
@@ -578,14 +634,18 @@ async function handleDeletePassage(server, args) {
         return await server.client.agents.passages.delete(agent_id, passage_id);
     }, 'Deleting passage');
 
-    return validateResponse(MemoryResponseSchema, {
-                    success: true,
-                    operation: 'delete_passage',
-                    agent_id,
-                    passage_id,
-                    deleted: true,
-                    message: 'Passage deleted successfully',
-                }, { context: 'memory_ops' });
+    return validateResponse(
+        MemoryResponseSchema,
+        {
+            success: true,
+            operation: 'delete_passage',
+            agent_id,
+            passage_id,
+            deleted: true,
+            message: 'Passage deleted successfully',
+        },
+        { context: 'memory_ops' },
+    );
 }
 
 /**

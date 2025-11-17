@@ -24,7 +24,11 @@ export async function handleUsePrompt(server, args) {
         // Execute the prompt handler
         const messages = await prompt.handler(promptArgs || {});
 
-        return validateResponse(PromptExecutionResponseSchema, 
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(
                         {
                             prompt_name,
                             description: prompt.description,
@@ -33,7 +37,15 @@ export async function handleUsePrompt(server, args) {
                         },
                         null,
                         2,
-                    , { context: 'use_prompt' });
+                    ),
+                },
+            ],
+            structuredContent: {
+                prompt_name,
+                description: prompt.description,
+                messages,
+            },
+        };
     } catch (error) {
         return server.createErrorResponse(error, 'Failed to execute prompt');
     }
@@ -61,5 +73,30 @@ export const usePromptToolDefinition = {
             },
         },
         required: ['prompt_name'],
+    },
+    outputSchema: {
+        type: 'object',
+        properties: {
+            prompt_name: {
+                type: 'string',
+                description: 'Name of the executed prompt',
+            },
+            description: {
+                type: 'string',
+                description: 'Description of the prompt',
+            },
+            messages: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        role: { type: 'string' },
+                        content: { type: 'object' },
+                    },
+                },
+                description: 'Messages returned by the prompt',
+            },
+        },
+        required: ['prompt_name', 'messages'],
     },
 };

@@ -12,14 +12,25 @@ export async function handleListPrompts(server) {
             arguments: p.arguments || [],
         }));
 
-        return validateResponse(PromptResponseSchema, 
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(
                         {
                             total_prompts: prompts.length,
                             prompts,
                         },
                         null,
                         2,
-                    , { context: 'list_prompts' });
+                    ),
+                },
+            ],
+            structuredContent: {
+                total_prompts: prompts.length,
+                prompts,
+            },
+        };
     } catch (error) {
         return server.createErrorResponse(error, 'Failed to list prompts');
     }
@@ -34,6 +45,38 @@ export const listPromptsToolDefinition = {
     inputSchema: {
         type: 'object',
         properties: {},
-        additionalProperties: false,
+    },
+    outputSchema: {
+        type: 'object',
+        properties: {
+            total_prompts: {
+                type: 'integer',
+                description: 'Total number of available prompts',
+            },
+            prompts: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        name: { type: 'string' },
+                        title: { type: 'string' },
+                        description: { type: 'string' },
+                        arguments: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    name: { type: 'string' },
+                                    title: { type: 'string' },
+                                    description: { type: 'string' },
+                                    required: { type: 'boolean' },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        required: ['total_prompts', 'prompts'],
     },
 };
