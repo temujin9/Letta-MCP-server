@@ -129,6 +129,8 @@ describe('API Client Configuration (LMP-85)', () => {
                 Accept: 'application/json',
                 'X-BARE-PASSWORD': 'password my-secret-password',
                 Authorization: 'Bearer my-secret-password',
+                'User-Agent': 'letta-mcp-server/2.0.1 (sdk-v1.0-compatible)',
+                'X-Letta-SDK-Version': '1.0',
             });
         });
 
@@ -143,6 +145,8 @@ describe('API Client Configuration (LMP-85)', () => {
                 Accept: 'application/json',
                 'X-BARE-PASSWORD': 'password ',
                 Authorization: 'Bearer ',
+                'User-Agent': 'letta-mcp-server/2.0.1 (sdk-v1.0-compatible)',
+                'X-Letta-SDK-Version': '1.0',
             });
         });
 
@@ -157,6 +161,8 @@ describe('API Client Configuration (LMP-85)', () => {
                 Accept: 'application/json',
                 'X-BARE-PASSWORD': 'password p@$$w0rd!#$%^&*()',
                 Authorization: 'Bearer p@$$w0rd!#$%^&*()',
+                'User-Agent': 'letta-mcp-server/2.0.1 (sdk-v1.0-compatible)',
+                'X-Letta-SDK-Version': '1.0',
             });
         });
 
