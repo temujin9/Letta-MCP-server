@@ -71,6 +71,8 @@ describe('LettaServer', () => {
             Accept: 'application/json',
             'X-BARE-PASSWORD': 'password test-password',
             Authorization: 'Bearer test-password',
+            'User-Agent': 'letta-mcp-server/2.0.1 (sdk-v1.0-compatible)',
+            'X-Letta-SDK-Version': '1.0',
         });
     });
 });
