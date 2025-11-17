@@ -16,7 +16,13 @@ export async function handleListPassages(server, args) {
         if (args.before) params.before = args.before;
         if (args.limit) params.limit = args.limit;
         if (args.search) params.search = args.search;
-        if (args.ascending !== undefined) params.ascending = args.ascending; // Handle boolean false
+        // SDK v1.0: Use 'order' parameter instead of deprecated 'ascending'
+        if (args.order) {
+            params.order = args.order; // 'asc' or 'desc'
+        } else if (args.ascending !== undefined) {
+            // Backward compatibility: convert boolean ascending to order string
+            params.order = args.ascending ? 'asc' : 'desc';
+        }
 
         // Use the specific endpoint from the OpenAPI spec
         const response = await server.api.get(`/agents/${agentId}/archival-memory`, {
@@ -85,11 +91,18 @@ export const listPassagesDefinition = {
                 type: 'string',
                 description: 'Search passages by text content.',
             },
+            order: {
+                type: 'string',
+                enum: ['asc', 'desc'],
+                description:
+                    'Sort order for passages: "asc" for oldest to newest (default), "desc" for newest to oldest. (SDK v1.0)',
+                default: 'asc',
+            },
             ascending: {
                 type: 'boolean',
                 description:
-                    'Whether to sort passages oldest to newest (True, default) or newest to oldest (False).',
-                default: true,
+                    'DEPRECATED: Use "order" instead. Whether to sort passages oldest to newest (True) or newest to oldest (False).',
+                deprecated: true,
             },
             include_embeddings: {
                 type: 'boolean',
