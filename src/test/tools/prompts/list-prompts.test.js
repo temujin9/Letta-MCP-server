@@ -28,7 +28,8 @@ describe('List Prompts Tool', () => {
                     properties: {},
                 },
             });
-            expect(listPromptsToolDefinition.outputSchema).toBeUndefined();
+            expect(listPromptsToolDefinition.outputSchema).toBeDefined();
+            expect(listPromptsToolDefinition.outputSchema).toHaveProperty('type', 'object');
         });
     });
 
@@ -45,7 +46,11 @@ describe('List Prompts Tool', () => {
                 prompts: [],
             });
 
-            expect(result.structuredContent).toBeUndefined();
+            expect(result.structuredContent).toBeDefined();
+            expect(result.structuredContent).toEqual({
+                total_prompts: 0,
+                prompts: [],
+            });
         });
 
         it('should list all registered prompts', async () => {
@@ -198,7 +203,18 @@ describe('List Prompts Tool', () => {
                 ],
             });
 
-            expect(result.structuredContent).toBeUndefined();
+            expect(result.structuredContent).toBeDefined();
+            expect(result.structuredContent).toEqual({
+                total_prompts: 1,
+                prompts: [
+                    {
+                        name: 'test',
+                        title: 'Test',
+                        description: 'Test prompt',
+                        arguments: [],
+                    },
+                ],
+            });
         });
 
         it('should not include handler function in output', async () => {
